@@ -1,0 +1,109 @@
+name: Build Reedwake BPS patch
+
+on:
+  push:
+    branches:
+      - scientific-fantasy-build
+    paths:
+      - .github/workflows/build-reedwake-patch.yml
+      - tools/create_bps.py
+      - tools/install_science_palette.py
+      - Pokemon - Emerald Version (U).gba
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout clean Emerald base repository
+        uses: actions/checkout@v4
+
+      - name: Checkout Reedwake source patches and assets
+        uses: actions/checkout@v4
+        with:
+          repository: WiserOsprey/airomhacktests
+          ref: scientific-fantasy-overhaul
+          path: hack
+
+      - name: Checkout Emerald decompilation at the patch base revision
+        uses: actions/checkout@v4
+        with:
+          repository: pret/pokeemerald
+          ref: 9103e529c2fbdd7add4a1ff3350c6c1f92112c42
+          path: source
+
+      - name: Checkout agbcc
+        uses: actions/checkout@v4
+        with:
+          repository: pret/agbcc
+          path: source/agbcc
+
+      - name: Verify the supplied ROM is clean US Emerald
+        run: |
+          echo "f3ae088181bf583e55daf962a92bb46f4f1d07b7  Pokemon - Emerald Version (U).gba" | sha1sum --check -
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential gcc-arm-none-eabi binutils-arm-none-eabi libpng-dev
+
+      - name: Build agbcc
+        working-directory: source/agbcc
+        run: |
+          ./build.sh
+          ./install.sh ../
+
+      - name: Apply Reedwake opening patch and fitted Pokédex changes
+        run: |
+          git -C source apply --binary "hack/Reedwake - Source.patch"
+          mkdir -p source/graphics/pokedex/purple
+          cp hack/purple-pokedex-gba/background.4bpp source/graphics/pokedex/purple/background.4bpp
+          cp hack/purple-pokedex-gba/list_underlay.bin source/graphics/pokedex/purple/list_underlay.bin
+          cp hack/purple-pokedex-gba/background.gbapal source/graphics/pokedex/purple/background.gbapal
+          cp hack/purple-pokedex-gba/fitted/foreground.4bpp source/graphics/pokedex/purple/foreground.4bpp
+          cp hack/purple-pokedex-gba/fitted/foreground.tilemap source/graphics/pokedex/purple/foreground.tilemap
+          cp hack/purple-pokedex-gba/fitted/foreground.gbapal source/graphics/pokedex/purple/foreground.gbapal
+          git -C source apply --binary "hack/purple-pokedex-gba/fitted/pokedex-foreground.patch"
+          git -C source apply --binary "hack/purple-pokedex-gba/fitted/bulbasaur-field-notes.patch"
+          git -C source apply --binary "hack/purple-pokedex-gba/fitted/research-delta/research-delta.patch"
+          python3 hack/tools/install_science_palette.py "$GITHUB_WORKSPACE/source" "$GITHUB_WORKSPACE/hack/purple-pokedex-gba/science-fantasy/bg_science_fantasy.pal"
+
+      - name: Build the ROM
+        working-directory: source
+        env:
+          GAME_VERSION: EMERALD
+          GAME_REVISION: 0
+          GAME_LANGUAGE: ENGLISH
+          MODERN: 0
+          COMPARE: 0
+        run: make -j2 all
+
+      - name: Create distributable BPS patch
+        run: |
+          mkdir -p dist
+          python3 tools/create_bps.py "Pokemon - Emerald Version (U).gba" source/pokeemerald.gba dist/Reedwake-Scientific-Fantasy.bps
+          cat > dist/README.txt <<'EOF'
+          Reedwake: Scientific Fantasy — prototype patch
+
+          Patch format: BPS
+          Required base: unmodified US Pokémon Emerald, revision 0
+          Required base SHA1: f3ae088181bf583e55daf962a92bb46f4f1d07b7
+
+          Apply the BPS patch to a legally obtained clean base ROM with a BPS patcher.
+          This artifact contains the patch only; it does not contain the game ROM.
+
+          This is an early opening and Pokédex prototype, not the completed regional campaign.
+          EOF
+
+      - name: Upload BPS patch only
+        uses: actions/upload-artifact@v4
+        with:
+          name: Reedwake-Scientific-Fantasy-BPS
+          path: |
+            dist/Reedwake-Scientific-Fantasy.bps
+            dist/README.txt
+          if-no-files-found: error
+          retention-days: 30
