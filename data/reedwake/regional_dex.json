@@ -1,0 +1,1661 @@
+{
+  "project": "Reedwake: The Resonant Tide",
+  "schemaVersion": 1,
+  "baseGame": "Pokemon Emerald (U), revision 0",
+  "rosterSize": 60,
+  "deltaForms": 60,
+  "statsNote": "Delta forms retain standard base stats in this first-pass balance target; abilities and types are listed separately.",
+  "species": [
+    {
+      "dex": 1,
+      "family": "Fernut",
+      "familyId": 1,
+      "name": "Fernut",
+      "stage": 1,
+      "types": [
+        "Grass"
+      ],
+      "deltaTypes": [
+        "Grass",
+        "Electric"
+      ],
+      "stats": {
+        "hp": 45,
+        "attack": 45,
+        "defense": 55,
+        "speed": 45,
+        "specialAttack": 50,
+        "specialDefense": 50
+      },
+      "ability": "Overgrow",
+      "deltaAbility": "Static",
+      "evolvesAt": 16,
+      "evolvesTo": "Bramblet",
+      "ecology": null
+    },
+    {
+      "dex": 2,
+      "family": "Fernut",
+      "familyId": 1,
+      "name": "Bramblet",
+      "stage": 2,
+      "types": [
+        "Grass"
+      ],
+      "deltaTypes": [
+        "Grass",
+        "Electric"
+      ],
+      "stats": {
+        "hp": 60,
+        "attack": 60,
+        "defense": 70,
+        "speed": 60,
+        "specialAttack": 65,
+        "specialDefense": 65
+      },
+      "ability": "Chlorophyll",
+      "deltaAbility": "Static",
+      "evolvesAt": 36,
+      "evolvesTo": "Canoplate",
+      "ecology": null
+    },
+    {
+      "dex": 3,
+      "family": "Fernut",
+      "familyId": 1,
+      "name": "Canoplate",
+      "stage": 3,
+      "types": [
+        "Grass",
+        "Rock"
+      ],
+      "deltaTypes": [
+        "Rock",
+        "Electric"
+      ],
+      "stats": {
+        "hp": 80,
+        "attack": 90,
+        "defense": 95,
+        "speed": 65,
+        "specialAttack": 95,
+        "specialDefense": 85
+      },
+      "ability": "Rock Head",
+      "deltaAbility": "Lightning Rod",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 4,
+      "family": "Cindrix",
+      "familyId": 2,
+      "name": "Cindrix",
+      "stage": 1,
+      "types": [
+        "Fire"
+      ],
+      "deltaTypes": [
+        "Fire",
+        "Ghost"
+      ],
+      "stats": {
+        "hp": 39,
+        "attack": 52,
+        "defense": 42,
+        "speed": 67,
+        "specialAttack": 60,
+        "specialDefense": 42
+      },
+      "ability": "Blaze",
+      "deltaAbility": "Levitate",
+      "evolvesAt": 16,
+      "evolvesTo": "Flareden",
+      "ecology": null
+    },
+    {
+      "dex": 5,
+      "family": "Cindrix",
+      "familyId": 2,
+      "name": "Flareden",
+      "stage": 2,
+      "types": [
+        "Fire"
+      ],
+      "deltaTypes": [
+        "Fire",
+        "Ghost"
+      ],
+      "stats": {
+        "hp": 58,
+        "attack": 73,
+        "defense": 55,
+        "speed": 84,
+        "specialAttack": 80,
+        "specialDefense": 56
+      },
+      "ability": "Flame Body",
+      "deltaAbility": "Levitate",
+      "evolvesAt": 36,
+      "evolvesTo": "Vulprism",
+      "ecology": null
+    },
+    {
+      "dex": 6,
+      "family": "Cindrix",
+      "familyId": 2,
+      "name": "Vulprism",
+      "stage": 3,
+      "types": [
+        "Fire",
+        "Dark"
+      ],
+      "deltaTypes": [
+        "Dark",
+        "Psychic"
+      ],
+      "stats": {
+        "hp": 78,
+        "attack": 95,
+        "defense": 72,
+        "speed": 110,
+        "specialAttack": 118,
+        "specialDefense": 82
+      },
+      "ability": "Flash Fire",
+      "deltaAbility": "Levitate",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 7,
+      "family": "Rillfin",
+      "familyId": 3,
+      "name": "Rillfin",
+      "stage": 1,
+      "types": [
+        "Water"
+      ],
+      "deltaTypes": [
+        "Water",
+        "Ice"
+      ],
+      "stats": {
+        "hp": 50,
+        "attack": 55,
+        "defense": 55,
+        "speed": 55,
+        "specialAttack": 45,
+        "specialDefense": 55
+      },
+      "ability": "Torrent",
+      "deltaAbility": "Water Absorb",
+      "evolvesAt": 16,
+      "evolvesTo": "Bendruff",
+      "ecology": null
+    },
+    {
+      "dex": 8,
+      "family": "Rillfin",
+      "familyId": 3,
+      "name": "Bendruff",
+      "stage": 2,
+      "types": [
+        "Water"
+      ],
+      "deltaTypes": [
+        "Water",
+        "Ice"
+      ],
+      "stats": {
+        "hp": 65,
+        "attack": 75,
+        "defense": 75,
+        "speed": 65,
+        "specialAttack": 60,
+        "specialDefense": 70
+      },
+      "ability": "Swift Swim",
+      "deltaAbility": "Thick Fat",
+      "evolvesAt": 36,
+      "evolvesTo": "Estuarch",
+      "ecology": null
+    },
+    {
+      "dex": 9,
+      "family": "Rillfin",
+      "familyId": 3,
+      "name": "Estuarch",
+      "stage": 3,
+      "types": [
+        "Water",
+        "Fighting"
+      ],
+      "deltaTypes": [
+        "Fighting",
+        "Ice"
+      ],
+      "stats": {
+        "hp": 90,
+        "attack": 115,
+        "defense": 90,
+        "speed": 70,
+        "specialAttack": 95,
+        "specialDefense": 100
+      },
+      "ability": "Guts",
+      "deltaAbility": "Thick Fat",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 10,
+      "family": "Peathare",
+      "familyId": 4,
+      "name": "Peathare",
+      "stage": 1,
+      "types": [
+        "Grass"
+      ],
+      "deltaTypes": [
+        "Grass",
+        "Poison"
+      ],
+      "stats": {
+        "hp": 50,
+        "attack": 45,
+        "defense": 50,
+        "speed": 55,
+        "specialAttack": 40,
+        "specialDefense": 45
+      },
+      "ability": "Run Away",
+      "deltaAbility": "Effect Spore",
+      "evolvesAt": 16,
+      "evolvesTo": "Bogrel",
+      "ecology": null
+    },
+    {
+      "dex": 11,
+      "family": "Peathare",
+      "familyId": 4,
+      "name": "Bogrel",
+      "stage": 2,
+      "types": [
+        "Grass",
+        "Ground"
+      ],
+      "deltaTypes": [
+        "Ground",
+        "Poison"
+      ],
+      "stats": {
+        "hp": 70,
+        "attack": 60,
+        "defense": 70,
+        "speed": 60,
+        "specialAttack": 50,
+        "specialDefense": 60
+      },
+      "ability": "Damp",
+      "deltaAbility": "Effect Spore",
+      "evolvesAt": 34,
+      "evolvesTo": "Mirehart",
+      "ecology": null
+    },
+    {
+      "dex": 12,
+      "family": "Peathare",
+      "familyId": 4,
+      "name": "Mirehart",
+      "stage": 3,
+      "types": [
+        "Grass",
+        "Ground"
+      ],
+      "deltaTypes": [
+        "Grass",
+        "Ghost"
+      ],
+      "stats": {
+        "hp": 95,
+        "attack": 80,
+        "defense": 90,
+        "speed": 55,
+        "specialAttack": 65,
+        "specialDefense": 100
+      },
+      "ability": "Natural Cure",
+      "deltaAbility": "Effect Spore",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 13,
+      "family": "Siltstilt",
+      "familyId": 5,
+      "name": "Siltstilt",
+      "stage": 1,
+      "types": [
+        "Normal",
+        "Flying"
+      ],
+      "deltaTypes": [
+        "Normal",
+        "Steel"
+      ],
+      "stats": {
+        "hp": 40,
+        "attack": 50,
+        "defense": 40,
+        "speed": 70,
+        "specialAttack": 35,
+        "specialDefense": 45
+      },
+      "ability": "Keen Eye",
+      "deltaAbility": "Water Veil",
+      "evolvesAt": 16,
+      "evolvesTo": "Reedrake",
+      "ecology": null
+    },
+    {
+      "dex": 14,
+      "family": "Siltstilt",
+      "familyId": 5,
+      "name": "Reedrake",
+      "stage": 2,
+      "types": [
+        "Flying"
+      ],
+      "deltaTypes": [
+        "Flying",
+        "Steel"
+      ],
+      "stats": {
+        "hp": 65,
+        "attack": 75,
+        "defense": 55,
+        "speed": 90,
+        "specialAttack": 50,
+        "specialDefense": 60
+      },
+      "ability": "Early Bird",
+      "deltaAbility": "Water Veil",
+      "evolvesAt": 34,
+      "evolvesTo": "Fenstilt",
+      "ecology": null
+    },
+    {
+      "dex": 15,
+      "family": "Siltstilt",
+      "familyId": 5,
+      "name": "Fenstilt",
+      "stage": 3,
+      "types": [
+        "Water",
+        "Flying"
+      ],
+      "deltaTypes": [
+        "Water",
+        "Steel"
+      ],
+      "stats": {
+        "hp": 85,
+        "attack": 95,
+        "defense": 80,
+        "speed": 105,
+        "specialAttack": 65,
+        "specialDefense": 85
+      },
+      "ability": "Swift Swim",
+      "deltaAbility": "Lightning Rod",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 16,
+      "family": "Podtick",
+      "familyId": 6,
+      "name": "Podtick",
+      "stage": 1,
+      "types": [
+        "Bug"
+      ],
+      "deltaTypes": [
+        "Bug",
+        "Fire"
+      ],
+      "stats": {
+        "hp": 45,
+        "attack": 50,
+        "defense": 40,
+        "speed": 35,
+        "specialAttack": 25,
+        "specialDefense": 30
+      },
+      "ability": "Shield Dust",
+      "deltaAbility": "Flame Body",
+      "evolvesAt": 7,
+      "evolvesTo": "Silkettle",
+      "ecology": null
+    },
+    {
+      "dex": 17,
+      "family": "Podtick",
+      "familyId": 6,
+      "name": "Silkettle",
+      "stage": 2,
+      "types": [
+        "Bug"
+      ],
+      "deltaTypes": [
+        "Bug",
+        "Fire"
+      ],
+      "stats": {
+        "hp": 55,
+        "attack": 55,
+        "defense": 85,
+        "speed": 15,
+        "specialAttack": 45,
+        "specialDefense": 70
+      },
+      "ability": "Shed Skin",
+      "deltaAbility": "Flame Body",
+      "evolvesAt": 10,
+      "evolvesTo": "Latchwing",
+      "ecology": null
+    },
+    {
+      "dex": 18,
+      "family": "Podtick",
+      "familyId": 6,
+      "name": "Latchwing",
+      "stage": 3,
+      "types": [
+        "Bug",
+        "Steel"
+      ],
+      "deltaTypes": [
+        "Bug",
+        "Fire"
+      ],
+      "stats": {
+        "hp": 65,
+        "attack": 105,
+        "defense": 95,
+        "speed": 75,
+        "specialAttack": 55,
+        "specialDefense": 90
+      },
+      "ability": "Sturdy",
+      "deltaAbility": "Flame Body",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 19,
+      "family": "Lockmole",
+      "familyId": null,
+      "name": "Siltmole",
+      "stage": 1,
+      "types": [
+        "Ground"
+      ],
+      "deltaTypes": [
+        "Ground",
+        "Water"
+      ],
+      "stats": {
+        "hp": 55,
+        "attack": 50,
+        "defense": 65,
+        "speed": 30,
+        "specialAttack": 30,
+        "specialDefense": 40
+      },
+      "ability": "Sand Veil",
+      "deltaAbility": "Water Absorb",
+      "evolvesAt": 12,
+      "evolvesTo": "Gategrub",
+      "ecology": null
+    },
+    {
+      "dex": 20,
+      "family": "Lockmole",
+      "familyId": null,
+      "name": "Gategrub",
+      "stage": 2,
+      "types": [
+        "Ground",
+        "Rock"
+      ],
+      "deltaTypes": [
+        "Rock",
+        "Water"
+      ],
+      "stats": {
+        "hp": 70,
+        "attack": 70,
+        "defense": 95,
+        "speed": 35,
+        "specialAttack": 40,
+        "specialDefense": 60
+      },
+      "ability": "Sturdy",
+      "deltaAbility": "Water Absorb",
+      "evolvesAt": 14,
+      "evolvesTo": "Lockmole",
+      "ecology": null
+    },
+    {
+      "dex": 21,
+      "family": "Lockmole",
+      "familyId": null,
+      "name": "Lockmole",
+      "stage": 3,
+      "types": [
+        "Ground",
+        "Steel"
+      ],
+      "deltaTypes": [
+        "Steel",
+        "Water"
+      ],
+      "stats": {
+        "hp": 90,
+        "attack": 105,
+        "defense": 125,
+        "speed": 45,
+        "specialAttack": 55,
+        "specialDefense": 90
+      },
+      "ability": "Sturdy",
+      "deltaAbility": "Water Absorb",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 22,
+      "family": "Graftwing",
+      "familyId": null,
+      "name": "Sporelet",
+      "stage": 1,
+      "types": [
+        "Bug"
+      ],
+      "deltaTypes": [
+        "Bug",
+        "Poison"
+      ],
+      "stats": {
+        "hp": 45,
+        "attack": 45,
+        "defense": 40,
+        "speed": 50,
+        "specialAttack": 45,
+        "specialDefense": 50
+      },
+      "ability": "Effect Spore",
+      "deltaAbility": "Poison Point",
+      "evolvesAt": 10,
+      "evolvesTo": "Budwing",
+      "ecology": null
+    },
+    {
+      "dex": 23,
+      "family": "Graftwing",
+      "familyId": null,
+      "name": "Budwing",
+      "stage": 2,
+      "types": [
+        "Bug",
+        "Grass"
+      ],
+      "deltaTypes": [
+        "Grass",
+        "Poison"
+      ],
+      "stats": {
+        "hp": 55,
+        "attack": 60,
+        "defense": 55,
+        "speed": 75,
+        "specialAttack": 65,
+        "specialDefense": 65
+      },
+      "ability": "Chlorophyll",
+      "deltaAbility": "Poison Point",
+      "evolvesAt": 18,
+      "evolvesTo": "Graftwing",
+      "ecology": null
+    },
+    {
+      "dex": 24,
+      "family": "Graftwing",
+      "familyId": null,
+      "name": "Graftwing",
+      "stage": 3,
+      "types": [
+        "Bug",
+        "Grass"
+      ],
+      "deltaTypes": [
+        "Bug",
+        "Poison"
+      ],
+      "stats": {
+        "hp": 75,
+        "attack": 90,
+        "defense": 75,
+        "speed": 90,
+        "specialAttack": 100,
+        "specialDefense": 85
+      },
+      "ability": "Swarm",
+      "deltaAbility": "Poison Point",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 25,
+      "family": "Galegull",
+      "familyId": null,
+      "name": "Gullit",
+      "stage": 1,
+      "types": [
+        "Flying"
+      ],
+      "deltaTypes": [
+        "Flying",
+        "Electric"
+      ],
+      "stats": {
+        "hp": 40,
+        "attack": 55,
+        "defense": 35,
+        "speed": 70,
+        "specialAttack": 30,
+        "specialDefense": 40
+      },
+      "ability": "Keen Eye",
+      "deltaAbility": "Static",
+      "evolvesAt": 16,
+      "evolvesTo": "Vaneagle",
+      "ecology": null
+    },
+    {
+      "dex": 26,
+      "family": "Galegull",
+      "familyId": null,
+      "name": "Vaneagle",
+      "stage": 2,
+      "types": [
+        "Flying"
+      ],
+      "deltaTypes": [
+        "Flying",
+        "Electric"
+      ],
+      "stats": {
+        "hp": 60,
+        "attack": 80,
+        "defense": 55,
+        "speed": 95,
+        "specialAttack": 45,
+        "specialDefense": 55
+      },
+      "ability": "Guts",
+      "deltaAbility": "Static",
+      "evolvesAt": 26,
+      "evolvesTo": "Galegull",
+      "ecology": null
+    },
+    {
+      "dex": 27,
+      "family": "Galegull",
+      "familyId": null,
+      "name": "Galegull",
+      "stage": 3,
+      "types": [
+        "Flying",
+        "Water"
+      ],
+      "deltaTypes": [
+        "Water",
+        "Electric"
+      ],
+      "stats": {
+        "hp": 85,
+        "attack": 100,
+        "defense": 75,
+        "speed": 125,
+        "specialAttack": 75,
+        "specialDefense": 85
+      },
+      "ability": "Swift Swim",
+      "deltaAbility": "Static",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 28,
+      "family": "Arcrail",
+      "familyId": null,
+      "name": "Tramkit",
+      "stage": 1,
+      "types": [
+        "Electric"
+      ],
+      "deltaTypes": [
+        "Electric",
+        "Ghost"
+      ],
+      "stats": {
+        "hp": 40,
+        "attack": 45,
+        "defense": 40,
+        "speed": 65,
+        "specialAttack": 50,
+        "specialDefense": 45
+      },
+      "ability": "Static",
+      "deltaAbility": "Levitate",
+      "evolvesAt": 16,
+      "evolvesTo": "Voltrack",
+      "ecology": null
+    },
+    {
+      "dex": 29,
+      "family": "Arcrail",
+      "familyId": null,
+      "name": "Voltrack",
+      "stage": 2,
+      "types": [
+        "Electric"
+      ],
+      "deltaTypes": [
+        "Electric",
+        "Ghost"
+      ],
+      "stats": {
+        "hp": 60,
+        "attack": 65,
+        "defense": 55,
+        "speed": 95,
+        "specialAttack": 75,
+        "specialDefense": 65
+      },
+      "ability": "Static",
+      "deltaAbility": "Levitate",
+      "evolvesAt": 30,
+      "evolvesTo": "Arcrail",
+      "ecology": null
+    },
+    {
+      "dex": 30,
+      "family": "Arcrail",
+      "familyId": null,
+      "name": "Arcrail",
+      "stage": 3,
+      "types": [
+        "Electric",
+        "Steel"
+      ],
+      "deltaTypes": [
+        "Steel",
+        "Ghost"
+      ],
+      "stats": {
+        "hp": 85,
+        "attack": 95,
+        "defense": 90,
+        "speed": 110,
+        "specialAttack": 95,
+        "specialDefense": 95
+      },
+      "ability": "Magnet Pull",
+      "deltaAbility": "Levitate",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 31,
+      "family": "Wakewisp",
+      "familyId": null,
+      "name": "Saltmote",
+      "stage": 1,
+      "types": [
+        "Ghost"
+      ],
+      "deltaTypes": [
+        "Ghost",
+        "Grass"
+      ],
+      "stats": {
+        "hp": 45,
+        "attack": 35,
+        "defense": 40,
+        "speed": 60,
+        "specialAttack": 65,
+        "specialDefense": 60
+      },
+      "ability": "Levitate",
+      "deltaAbility": "Natural Cure",
+      "evolvesAt": 16,
+      "evolvesTo": "Brinewisp",
+      "ecology": null
+    },
+    {
+      "dex": 32,
+      "family": "Wakewisp",
+      "familyId": null,
+      "name": "Brinewisp",
+      "stage": 2,
+      "types": [
+        "Ghost"
+      ],
+      "deltaTypes": [
+        "Ghost",
+        "Ice"
+      ],
+      "stats": {
+        "hp": 60,
+        "attack": 45,
+        "defense": 55,
+        "speed": 75,
+        "specialAttack": 90,
+        "specialDefense": 80
+      },
+      "ability": "Water Absorb",
+      "deltaAbility": "Thick Fat",
+      "evolvesAt": 38,
+      "evolvesTo": "Wakewisp",
+      "ecology": null
+    },
+    {
+      "dex": 33,
+      "family": "Wakewisp",
+      "familyId": null,
+      "name": "Wakewisp",
+      "stage": 3,
+      "types": [
+        "Ghost",
+        "Water"
+      ],
+      "deltaTypes": [
+        "Ghost",
+        "Ice"
+      ],
+      "stats": {
+        "hp": 80,
+        "attack": 70,
+        "defense": 80,
+        "speed": 95,
+        "specialAttack": 115,
+        "specialDefense": 105
+      },
+      "ability": "Intimidate",
+      "deltaAbility": "Thick Fat",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 34,
+      "family": "Glazeback",
+      "familyId": null,
+      "name": "Kilnlet",
+      "stage": 1,
+      "types": [
+        "Fire"
+      ],
+      "deltaTypes": [
+        "Fire",
+        "Water"
+      ],
+      "stats": {
+        "hp": 50,
+        "attack": 60,
+        "defense": 50,
+        "speed": 45,
+        "specialAttack": 45,
+        "specialDefense": 40
+      },
+      "ability": "Flame Body",
+      "deltaAbility": "Water Absorb",
+      "evolvesAt": 16,
+      "evolvesTo": "Potline",
+      "ecology": null
+    },
+    {
+      "dex": 35,
+      "family": "Glazeback",
+      "familyId": null,
+      "name": "Potline",
+      "stage": 2,
+      "types": [
+        "Fire",
+        "Rock"
+      ],
+      "deltaTypes": [
+        "Rock",
+        "Water"
+      ],
+      "stats": {
+        "hp": 70,
+        "attack": 80,
+        "defense": 75,
+        "speed": 50,
+        "specialAttack": 65,
+        "specialDefense": 55
+      },
+      "ability": "Rock Head",
+      "deltaAbility": "Water Absorb",
+      "evolvesAt": 42,
+      "evolvesTo": "Glazeback",
+      "ecology": null
+    },
+    {
+      "dex": 36,
+      "family": "Glazeback",
+      "familyId": null,
+      "name": "Glazeback",
+      "stage": 3,
+      "types": [
+        "Fire",
+        "Rock"
+      ],
+      "deltaTypes": [
+        "Fire",
+        "Water"
+      ],
+      "stats": {
+        "hp": 90,
+        "attack": 115,
+        "defense": 110,
+        "speed": 45,
+        "specialAttack": 85,
+        "specialDefense": 75
+      },
+      "ability": "White Smoke",
+      "deltaAbility": "Water Absorb",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 37,
+      "family": "Calverime",
+      "familyId": null,
+      "name": "Snowcap",
+      "stage": 1,
+      "types": [
+        "Ice"
+      ],
+      "deltaTypes": [
+        "Ice",
+        "Electric"
+      ],
+      "stats": {
+        "hp": 50,
+        "attack": 40,
+        "defense": 55,
+        "speed": 45,
+        "specialAttack": 55,
+        "specialDefense": 55
+      },
+      "ability": "Thick Fat",
+      "deltaAbility": "Static",
+      "evolvesAt": 16,
+      "evolvesTo": "Hushice",
+      "ecology": null
+    },
+    {
+      "dex": 38,
+      "family": "Calverime",
+      "familyId": null,
+      "name": "Hushice",
+      "stage": 2,
+      "types": [
+        "Ice"
+      ],
+      "deltaTypes": [
+        "Ice",
+        "Electric"
+      ],
+      "stats": {
+        "hp": 65,
+        "attack": 55,
+        "defense": 75,
+        "speed": 55,
+        "specialAttack": 80,
+        "specialDefense": 75
+      },
+      "ability": "Inner Focus",
+      "deltaAbility": "Static",
+      "evolvesAt": 46,
+      "evolvesTo": "Calverime",
+      "ecology": null
+    },
+    {
+      "dex": 39,
+      "family": "Calverime",
+      "familyId": null,
+      "name": "Calverime",
+      "stage": 3,
+      "types": [
+        "Ice",
+        "Water"
+      ],
+      "deltaTypes": [
+        "Water",
+        "Electric"
+      ],
+      "stats": {
+        "hp": 90,
+        "attack": 75,
+        "defense": 95,
+        "speed": 70,
+        "specialAttack": 110,
+        "specialDefense": 100
+      },
+      "ability": "Water Absorb",
+      "deltaAbility": "Static",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 40,
+      "family": "Tiderook",
+      "familyId": null,
+      "name": "Gatecrab",
+      "stage": 1,
+      "types": [
+        "Water"
+      ],
+      "deltaTypes": [
+        "Water",
+        "Ground"
+      ],
+      "stats": {
+        "hp": 50,
+        "attack": 65,
+        "defense": 65,
+        "speed": 30,
+        "specialAttack": 35,
+        "specialDefense": 45
+      },
+      "ability": "Shell Armor",
+      "deltaAbility": "Sand Veil",
+      "evolvesAt": 16,
+      "evolvesTo": "Tideguard",
+      "ecology": null
+    },
+    {
+      "dex": 41,
+      "family": "Tiderook",
+      "familyId": null,
+      "name": "Tideguard",
+      "stage": 2,
+      "types": [
+        "Water",
+        "Rock"
+      ],
+      "deltaTypes": [
+        "Water",
+        "Ground"
+      ],
+      "stats": {
+        "hp": 70,
+        "attack": 85,
+        "defense": 90,
+        "speed": 40,
+        "specialAttack": 55,
+        "specialDefense": 65
+      },
+      "ability": "Battle Armor",
+      "deltaAbility": "Sand Veil",
+      "evolvesAt": 52,
+      "evolvesTo": "Tiderook",
+      "ecology": null
+    },
+    {
+      "dex": 42,
+      "family": "Tiderook",
+      "familyId": null,
+      "name": "Tiderook",
+      "stage": 3,
+      "types": [
+        "Water",
+        "Steel"
+      ],
+      "deltaTypes": [
+        "Steel",
+        "Ground"
+      ],
+      "stats": {
+        "hp": 95,
+        "attack": 115,
+        "defense": 125,
+        "speed": 55,
+        "specialAttack": 65,
+        "specialDefense": 105
+      },
+      "ability": "Clear Body",
+      "deltaAbility": "Sand Veil",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 43,
+      "family": "Fenchorus",
+      "familyId": null,
+      "name": "Dewegg",
+      "stage": 1,
+      "types": [
+        "Water"
+      ],
+      "deltaTypes": [
+        "Water",
+        "Grass"
+      ],
+      "stats": {
+        "hp": 45,
+        "attack": 40,
+        "defense": 50,
+        "speed": 35,
+        "specialAttack": 50,
+        "specialDefense": 55
+      },
+      "ability": "Water Absorb",
+      "deltaAbility": "Chlorophyll",
+      "evolvesAt": 16,
+      "evolvesTo": "Bellfrog",
+      "ecology": null
+    },
+    {
+      "dex": 44,
+      "family": "Fenchorus",
+      "familyId": null,
+      "name": "Bellfrog",
+      "stage": 2,
+      "types": [
+        "Water",
+        "Poison"
+      ],
+      "deltaTypes": [
+        "Water",
+        "Grass"
+      ],
+      "stats": {
+        "hp": 65,
+        "attack": 50,
+        "defense": 70,
+        "speed": 40,
+        "specialAttack": 80,
+        "specialDefense": 75
+      },
+      "ability": "Damp",
+      "deltaAbility": "Chlorophyll",
+      "evolvesAt": 34,
+      "evolvesTo": "Fenchorus",
+      "ecology": null
+    },
+    {
+      "dex": 45,
+      "family": "Fenchorus",
+      "familyId": null,
+      "name": "Fenchorus",
+      "stage": 3,
+      "types": [
+        "Water",
+        "Poison"
+      ],
+      "deltaTypes": [
+        "Poison",
+        "Grass"
+      ],
+      "stats": {
+        "hp": 85,
+        "attack": 65,
+        "defense": 95,
+        "speed": 55,
+        "specialAttack": 105,
+        "specialDefense": 105
+      },
+      "ability": "Poison Point",
+      "deltaAbility": "Chlorophyll",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 46,
+      "family": "Lanterfly",
+      "familyId": null,
+      "name": "Sootwing",
+      "stage": 1,
+      "types": [
+        "Bug"
+      ],
+      "deltaTypes": [
+        "Bug",
+        "Water"
+      ],
+      "stats": {
+        "hp": 45,
+        "attack": 45,
+        "defense": 35,
+        "speed": 60,
+        "specialAttack": 50,
+        "specialDefense": 45
+      },
+      "ability": "Flame Body",
+      "deltaAbility": "Swift Swim",
+      "evolvesAt": 10,
+      "evolvesTo": "Wickmoth",
+      "ecology": null
+    },
+    {
+      "dex": 47,
+      "family": "Lanterfly",
+      "familyId": null,
+      "name": "Wickmoth",
+      "stage": 2,
+      "types": [
+        "Bug",
+        "Fire"
+      ],
+      "deltaTypes": [
+        "Bug",
+        "Water"
+      ],
+      "stats": {
+        "hp": 60,
+        "attack": 55,
+        "defense": 50,
+        "speed": 80,
+        "specialAttack": 75,
+        "specialDefense": 65
+      },
+      "ability": "Swarm",
+      "deltaAbility": "Swift Swim",
+      "evolvesAt": 24,
+      "evolvesTo": "Lanterfly",
+      "ecology": null
+    },
+    {
+      "dex": 48,
+      "family": "Lanterfly",
+      "familyId": null,
+      "name": "Lanterfly",
+      "stage": 3,
+      "types": [
+        "Bug",
+        "Fire"
+      ],
+      "deltaTypes": [
+        "Fire",
+        "Water"
+      ],
+      "stats": {
+        "hp": 75,
+        "attack": 70,
+        "defense": 65,
+        "speed": 115,
+        "specialAttack": 100,
+        "specialDefense": 90
+      },
+      "ability": "Flame Body",
+      "deltaAbility": "Swift Swim",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 49,
+      "family": "Thermwing",
+      "familyId": null,
+      "name": "Draftlet",
+      "stage": 1,
+      "types": [
+        "Flying"
+      ],
+      "deltaTypes": [
+        "Flying",
+        "Ice"
+      ],
+      "stats": {
+        "hp": 45,
+        "attack": 35,
+        "defense": 45,
+        "speed": 65,
+        "specialAttack": 50,
+        "specialDefense": 60
+      },
+      "ability": "Early Bird",
+      "deltaAbility": "Inner Focus",
+      "evolvesAt": 16,
+      "evolvesTo": "Shelfkite",
+      "ecology": null
+    },
+    {
+      "dex": 50,
+      "family": "Thermwing",
+      "familyId": null,
+      "name": "Shelfkite",
+      "stage": 2,
+      "types": [
+        "Flying",
+        "Psychic"
+      ],
+      "deltaTypes": [
+        "Flying",
+        "Ice"
+      ],
+      "stats": {
+        "hp": 60,
+        "attack": 50,
+        "defense": 60,
+        "speed": 85,
+        "specialAttack": 75,
+        "specialDefense": 80
+      },
+      "ability": "Keen Eye",
+      "deltaAbility": "Inner Focus",
+      "evolvesAt": 34,
+      "evolvesTo": "Thermwing",
+      "ecology": null
+    },
+    {
+      "dex": 51,
+      "family": "Thermwing",
+      "familyId": null,
+      "name": "Thermwing",
+      "stage": 3,
+      "types": [
+        "Flying",
+        "Psychic"
+      ],
+      "deltaTypes": [
+        "Psychic",
+        "Ice"
+      ],
+      "stats": {
+        "hp": 80,
+        "attack": 65,
+        "defense": 75,
+        "speed": 110,
+        "specialAttack": 105,
+        "specialDefense": 105
+      },
+      "ability": "Synchronize",
+      "deltaAbility": "Inner Focus",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 52,
+      "family": "Prismare",
+      "familyId": null,
+      "name": "Flintlet",
+      "stage": 1,
+      "types": [
+        "Rock"
+      ],
+      "deltaTypes": [
+        "Rock",
+        "Steel"
+      ],
+      "stats": {
+        "hp": 45,
+        "attack": 50,
+        "defense": 70,
+        "speed": 25,
+        "specialAttack": 30,
+        "specialDefense": 40
+      },
+      "ability": "Sturdy",
+      "deltaAbility": "Magnet Pull",
+      "evolvesAt": 16,
+      "evolvesTo": "Chertshell",
+      "ecology": null
+    },
+    {
+      "dex": 53,
+      "family": "Prismare",
+      "familyId": null,
+      "name": "Chertshell",
+      "stage": 2,
+      "types": [
+        "Rock"
+      ],
+      "deltaTypes": [
+        "Rock",
+        "Steel"
+      ],
+      "stats": {
+        "hp": 65,
+        "attack": 65,
+        "defense": 100,
+        "speed": 30,
+        "specialAttack": 45,
+        "specialDefense": 65
+      },
+      "ability": "Rock Head",
+      "deltaAbility": "Magnet Pull",
+      "evolvesAt": 34,
+      "evolvesTo": "Prismare",
+      "ecology": null
+    },
+    {
+      "dex": 54,
+      "family": "Prismare",
+      "familyId": null,
+      "name": "Prismare",
+      "stage": 3,
+      "types": [
+        "Rock",
+        "Psychic"
+      ],
+      "deltaTypes": [
+        "Psychic",
+        "Steel"
+      ],
+      "stats": {
+        "hp": 80,
+        "attack": 85,
+        "defense": 110,
+        "speed": 65,
+        "specialAttack": 120,
+        "specialDefense": 105
+      },
+      "ability": "Clear Body",
+      "deltaAbility": "Magnet Pull",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 55,
+      "family": "Lumenstur",
+      "familyId": null,
+      "name": "Coilfin",
+      "stage": 1,
+      "types": [
+        "Water"
+      ],
+      "deltaTypes": [
+        "Water",
+        "Psychic"
+      ],
+      "stats": {
+        "hp": 45,
+        "attack": 45,
+        "defense": 40,
+        "speed": 65,
+        "specialAttack": 55,
+        "specialDefense": 45
+      },
+      "ability": "Swift Swim",
+      "deltaAbility": "Synchronize",
+      "evolvesAt": 16,
+      "evolvesTo": "Sparkspine",
+      "ecology": null
+    },
+    {
+      "dex": 56,
+      "family": "Lumenstur",
+      "familyId": null,
+      "name": "Sparkspine",
+      "stage": 2,
+      "types": [
+        "Water",
+        "Electric"
+      ],
+      "deltaTypes": [
+        "Water",
+        "Psychic"
+      ],
+      "stats": {
+        "hp": 65,
+        "attack": 60,
+        "defense": 55,
+        "speed": 85,
+        "specialAttack": 80,
+        "specialDefense": 65
+      },
+      "ability": "Lightning Rod",
+      "deltaAbility": "Synchronize",
+      "evolvesAt": 34,
+      "evolvesTo": "Lumenstur",
+      "ecology": null
+    },
+    {
+      "dex": 57,
+      "family": "Lumenstur",
+      "familyId": null,
+      "name": "Lumenstur",
+      "stage": 3,
+      "types": [
+        "Water",
+        "Electric"
+      ],
+      "deltaTypes": [
+        "Electric",
+        "Psychic"
+      ],
+      "stats": {
+        "hp": 90,
+        "attack": 90,
+        "defense": 80,
+        "speed": 95,
+        "specialAttack": 125,
+        "specialDefense": 100
+      },
+      "ability": "Volt Absorb",
+      "deltaAbility": "Synchronize",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    },
+    {
+      "dex": 58,
+      "family": "Wellwyrm",
+      "familyId": null,
+      "name": "Rootling",
+      "stage": 1,
+      "types": [
+        "Grass"
+      ],
+      "deltaTypes": [
+        "Grass",
+        "Ice"
+      ],
+      "stats": {
+        "hp": 50,
+        "attack": 50,
+        "defense": 55,
+        "speed": 45,
+        "specialAttack": 55,
+        "specialDefense": 50
+      },
+      "ability": "Natural Cure",
+      "deltaAbility": "Thick Fat",
+      "evolvesAt": 16,
+      "evolvesTo": "Vineram",
+      "ecology": null
+    },
+    {
+      "dex": 59,
+      "family": "Wellwyrm",
+      "familyId": null,
+      "name": "Vineram",
+      "stage": 2,
+      "types": [
+        "Grass",
+        "Ground"
+      ],
+      "deltaTypes": [
+        "Ground",
+        "Ice"
+      ],
+      "stats": {
+        "hp": 75,
+        "attack": 80,
+        "defense": 80,
+        "speed": 55,
+        "specialAttack": 75,
+        "specialDefense": 70
+      },
+      "ability": "Rock Head",
+      "deltaAbility": "Thick Fat",
+      "evolvesAt": 40,
+      "evolvesTo": "Wellwyrm",
+      "ecology": null
+    },
+    {
+      "dex": 60,
+      "family": "Wellwyrm",
+      "familyId": null,
+      "name": "Wellwyrm",
+      "stage": 3,
+      "types": [
+        "Grass",
+        "Dragon"
+      ],
+      "deltaTypes": [
+        "Dragon",
+        "Ice"
+      ],
+      "stats": {
+        "hp": 105,
+        "attack": 110,
+        "defense": 105,
+        "speed": 70,
+        "specialAttack": 115,
+        "specialDefense": 100
+      },
+      "ability": "Levitate",
+      "deltaAbility": "Thick Fat",
+      "evolvesAt": null,
+      "evolvesTo": null,
+      "ecology": null
+    }
+  ]
+}
