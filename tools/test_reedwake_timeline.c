@@ -94,11 +94,15 @@ int main(void)
     assert(ReedwakeAdvance() && sTimeline.prompt && sTimeline.incoming == 1);
     keys = B_BUTTON;
     assert(ReedwakeAdvance() && sTimeline.next[1] == 1 && sTimeline.next[0] == 1);
-    keys = 0;
+    assert(sTimeline.count[1] == 3);
     for (i = 2; i <= 3; i++)
     {
+        keys = 0;
         assert(ReedwakeAdvance() && gBattlerByTurnOrder[0] == 0 && sTimeline.next[0] == i);
         sTimeline.started = FALSE;
+        assert(ReedwakeAdvance() && sTimeline.prompt);
+        keys = B_BUTTON;
+        assert(ReedwakeAdvance() && sTimeline.next[1] == i && sTimeline.next[0] == i);
     }
     assert(!ReedwakeAdvance());
 
@@ -143,6 +147,44 @@ int main(void)
     assert(ReedwakeSetQueue(0, slots, aim, 1));
     ReedwakeStart();
     assert(sTimeline.count[0] == 2 && sTimeline.queue[0][1] == 0);
+    Setup(MOVE_TACKLE, MOVE_POUND);
+    gBattleMons[1].pp[0] = 1;
+    gBattleMons[1].moves[1] = MOVE_TACKLE;
+    gBattleMons[1].pp[1] = 2;
+    assert(ReedwakeSetQueue(0, slots, aim, 3));
+    ReedwakeStart();
+    assert(sTimeline.count[1] == 3);
+    assert(sTimeline.queue[1][0] == 0 && sTimeline.queue[1][1] == 1 && sTimeline.queue[1][2] == 1);
+
+    Setup(MOVE_TACKLE, MOVE_POUND);
+    assert(ReedwakeSetQueue(0, slots, aim, 3));
+    ReedwakeStart();
+    gBattleMons[0].defense = 60;
+    ReedwakeReact(1, RW_DEFEND, RW_FRONT);
+    assert(sTimeline.next[0] == 0 && sTimeline.next[1] == 1);
+    assert(ReedwakeTimelineDamage(100) == 125);
+
+    Setup(MOVE_TACKLE, MOVE_POUND);
+    assert(ReedwakeSetQueue(0, slots, aim, 3));
+    ReedwakeStart();
+    gBattleMons[0].speed = 60;
+    gBattleMons[1].speed = 90;
+    assert(ReedwakeAdvance() && sTimeline.prompt);
+    keys = R_BUTTON;
+    assert(ReedwakeAdvance() && sTimeline.next[0] == 0 && sTimeline.next[1] == 1);
+    assert(ReedwakeTimelineDamage(100) == 125);
+    Setup(MOVE_TACKLE, MOVE_POUND);
+    assert(ReedwakeSetQueue(0, slots, aim, 3));
+    ReedwakeStart();
+    gBattleMons[0].speed = 59;
+    gBattleMons[1].speed = 90;
+    assert(ReedwakeAdvance() && !sTimeline.prompt && sTimeline.started);
+    assert(ReedwakeTimelineDamage(100) == 100);
+    gBattleMoves[MOVE_SURF].power = 95;
+    assert(ReedwakeMoveTicks(MOVE_TACKLE) == 1);
+    assert(ReedwakeMoveTicks(MOVE_METAL_CLAW) == 2);
+    assert(ReedwakeMoveTicks(MOVE_SURF) == 3);
+    assert(ReedwakeMoveTicks(MOVE_NONE) == 0);
     puts("Reedwake timeline checks passed.");
     return 0;
 }

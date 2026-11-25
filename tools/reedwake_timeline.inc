@@ -63,6 +63,11 @@ bool8 ReedwakeCanQueue(u16 move)
     }
 }
 
+u8 ReedwakeMoveTicks(u16 move)
+{
+    return ReedwakeCanQueue(move) ? ReedwakeTicks(move) : 0;
+}
+
 void ReedwakeCancelQueue(void)
 {
     sTimeline.requested = 0;
@@ -110,9 +115,48 @@ static u32 ReedwakeSpeed(u8 battler)
     return max(speed, 1);
 }
 
+static bool8 ReedwakeCanReact(u8 defender, u8 attacker)
+{
+    /* A battler can react at two thirds of the incoming attacker's Speed. */
+    return ReedwakeSpeed(defender) * 3 >= ReedwakeSpeed(attacker) * 2;
+}
+
 static u16 ReedwakeMove(u8 battler)
 {
     return gBattleMons[battler].moves[sTimeline.queue[battler][sTimeline.next[battler]]];
+}
+
+static void ReedwakePlanOpponent(u8 count)
+{
+    u8 preferred = gBattleStruct->chosenMovePositions[1];
+    u8 remaining[4];
+    u8 pick, slot, i, step;
+    u16 move;
+
+    memcpy(remaining, gBattleMons[1].pp, sizeof(remaining));
+    sTimeline.count[1] = count;
+    for (i = 0; i < count; i++)
+    {
+        pick = 4;
+        for (step = 0; step < 4; step++)
+        {
+            slot = (preferred + step) % 4;
+            move = gBattleMons[1].moves[slot];
+            if (!remaining[slot] || move == MOVE_NONE
+             || (ReedwakeCharge(move) && i + 1 == count))
+                continue;
+            if (slot != preferred && !ReedwakeCanQueue(move))
+                continue;
+            pick = slot;
+            break;
+        }
+        sTimeline.queue[1][i] = pick;
+        if (pick == 4)
+            continue;
+        remaining[pick]--;
+        if (ReedwakeCharge(gBattleMons[1].moves[pick]))
+            sTimeline.queue[1][++i] = pick;
+    }
 }
 
 static void ReedwakeStart(void)
@@ -145,19 +189,15 @@ static void ReedwakeStart(void)
         sTimeline.aim[count] = RW_FRONT;
         sTimeline.count[0]++;
     }
-    sTimeline.queue[1][0] = gBattleStruct->chosenMovePositions[1];
-    sTimeline.count[1] = ReedwakeCharge(gChosenMoveByBattler[1]) ? 2 : 1;
-    sTimeline.queue[1][1] = sTimeline.queue[1][0];
-    if ((gBattleTypeFlags & BATTLE_TYPE_TRAINER) && count >= 3
-        && gBattleMoves[gChosenMoveByBattler[1]].power && ReedwakeCanQueue(gChosenMoveByBattler[1]))
-        sTimeline.count[1] = 2;
+    ReedwakePlanOpponent(sTimeline.count[0]);
 }
 
 static bool8 ReedwakeReady(u8 battler)
 {
     while (sTimeline.next[battler] < sTimeline.count[battler])
     {
-        if (gBattleMons[battler].pp[sTimeline.queue[battler][sTimeline.next[battler]]])
+        u8 slot = sTimeline.queue[battler][sTimeline.next[battler]];
+        if (slot < 4 && gBattleMons[battler].pp[slot])
             return TRUE;
         sTimeline.next[battler]++;
     }
@@ -373,7 +413,7 @@ static bool8 ReedwakeAdvance(void)
         return TRUE;
     }
     if (actor == 0 && gBattleMoves[move].power && !ReedwakeCharge(move)
-        && ReedwakeSpeed(1) * 2 >= ReedwakeSpeed(0) && Random() % 5 == 0)
+        && ReedwakeCanReact(1, 0) && Random() % 5 == 0)
     {
         if (ReedwakeHasType(1, TYPE_FLYING) && (move == MOVE_EARTHQUAKE || move == MOVE_MAGNITUDE))
             ReedwakeReact(actor, RW_DODGE, RW_AIR);
@@ -385,7 +425,7 @@ static bool8 ReedwakeAdvance(void)
             ReedwakeReact(actor, RW_DEFEND, RW_FRONT);
         return TRUE;
     }
-    if (actor == 1 && gBattleMoves[move].power && !ReedwakeCharge(move) && ReedwakeSpeed(0) * 2 >= ReedwakeSpeed(1))
+    if (actor == 1 && gBattleMoves[move].power && (!ReedwakeCharge(move) || sTimeline.dug[1] || sTimeline.fly[1]) && ReedwakeCanReact(0, 1))
     {
         sTimeline.incoming = actor;
         sTimeline.prompt = TRUE;

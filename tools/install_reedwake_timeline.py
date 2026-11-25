@@ -8,6 +8,7 @@ TOOLS = Path(__file__).parent
 HEADER = """
 u8 ReedwakeQueueLimit(void);
 bool8 ReedwakeCanQueue(u16 move);
+u8 ReedwakeMoveTicks(u16 move);
 void ReedwakeCancelQueue(void);
 bool8 ReedwakeSetQueue(u8 battler, const u8 *slots, const u8 *positions, u8 count);
 s32 ReedwakeTimelineDamage(s32 damage);
@@ -131,4 +132,31 @@ static void Cmd_moveend(void)
     ("    if (gProtectStructs[gBattlerAttacker].helpingHand)\n        gBattleMoveDamage = gBattleMoveDamage * 15 / 10;\n",
      "    if (gProtectStructs[gBattlerAttacker].helpingHand)\n        gBattleMoveDamage = gBattleMoveDamage * 15 / 10;\n"
      "    gBattleMoveDamage = ReedwakeTimelineDamage(gBattleMoveDamage);\n"),
+])
+
+edit("src/pokemon_summary_screen.c", [
+    (header, with_header),
+    ("static const u8 sTextColors[][3] =", '''static const u8 sReedwakeMoveSpeed[] = _("Speed");
+static const u8 sReedwakeTicksUnavailable[] = _("N/A");
+static const u8 sReedwakeOneTick[] = _("1 tick");
+static const u8 sReedwakeTwoTicks[] = _("2 ticks");
+static const u8 sReedwakeThreeTicks[] = _("3 ticks");
+static const u8 *const sReedwakeTickText[] = {
+    sReedwakeTicksUnavailable, sReedwakeOneTick, sReedwakeTwoTicks, sReedwakeThreeTicks
+};
+static const u8 sTextColors[][3] ='''),
+    ("    PrintTextOnWindow(PSS_LABEL_WINDOW_MOVES_POWER_ACC, gText_Power, 0, 1, 0, 1);\n"
+     "    PrintTextOnWindow(PSS_LABEL_WINDOW_MOVES_POWER_ACC, gText_Accuracy2, 0, 17, 0, 1);",
+     '''    AddTextPrinterParameterized4(PSS_LABEL_WINDOW_MOVES_POWER_ACC, FONT_SMALL, 0, 0, 0, 0, sTextColors[1], 0, gText_Power);
+    AddTextPrinterParameterized4(PSS_LABEL_WINDOW_MOVES_POWER_ACC, FONT_SMALL, 0, 10, 0, 0, sTextColors[1], 0, gText_Accuracy2);
+    AddTextPrinterParameterized4(PSS_LABEL_WINDOW_MOVES_POWER_ACC, FONT_SMALL, 0, 20, 0, 0, sTextColors[1], 0, sReedwakeMoveSpeed);'''),
+    ("FillWindowPixelRect(PSS_LABEL_WINDOW_MOVES_POWER_ACC, PIXEL_FILL(0), 53, 0, 19, 32);",
+     "FillWindowPixelRect(PSS_LABEL_WINDOW_MOVES_POWER_ACC, PIXEL_FILL(0), 42, 0, 30, 32);"),
+    ("        PrintTextOnWindow(PSS_LABEL_WINDOW_MOVES_POWER_ACC, text, 53, 1, 0, 0);",
+     "        AddTextPrinterParameterized4(PSS_LABEL_WINDOW_MOVES_POWER_ACC, FONT_SMALL, GetStringRightAlignXOffset(FONT_SMALL, text, 71), 0, 0, 0, sTextColors[0], 0, text);"),
+    ("        PrintTextOnWindow(PSS_LABEL_WINDOW_MOVES_POWER_ACC, text, 53, 17, 0, 0);",
+     '''        AddTextPrinterParameterized4(PSS_LABEL_WINDOW_MOVES_POWER_ACC, FONT_SMALL, GetStringRightAlignXOffset(FONT_SMALL, text, 71), 10, 0, 0, sTextColors[0], 0, text);
+        text = sReedwakeTickText[ReedwakeMoveTicks(moveIndex)];
+        AddTextPrinterParameterized4(PSS_LABEL_WINDOW_MOVES_POWER_ACC, FONT_SMALL,
+            GetStringRightAlignXOffset(FONT_SMALL, text, 71), 20, 0, 0, sTextColors[0], 0, text);'''),
 ])
