@@ -9,6 +9,8 @@ on:
       - tools/create_bps.py
       - tools/install_science_palette.py
       - tools/install_evolution_species.py
+      - tools/install_delta_lab.py
+      - tools/reedwake_delta/**
       - data/reedwake/**
       - tools/install_rillfin_sprites.py
       - tools/install_fernut_sprites.py
@@ -89,6 +91,7 @@ jobs:
           python3 tools/install_fernut_sprites.py assets/peathare/front_concept.png assets/peathare/back_concept.png source/graphics/pokemon/poochyena
           python3 tools/install_fernut_sprites.py assets/siltstilt/front_concept.png assets/siltstilt/back_concept.png source/graphics/pokemon/zigzagoon
           python3 tools/install_fernut_sprites.py assets/podtick/front_concept.png assets/podtick/back_concept.png source/graphics/pokemon/wurmple
+          python3 tools/install_delta_lab.py data/reedwake/regional_dex.json "$GITHUB_WORKSPACE/source"
 
       - name: Build the ROM
         working-directory: source
