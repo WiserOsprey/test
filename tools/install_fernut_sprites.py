@@ -9,7 +9,9 @@ out_dir.mkdir(parents=True, exist_ok=True)
 
 def prepare(path):
     image = Image.open(path).convert("RGBA")
-    bounds = image.getchannel("A").getbbox()
+    alpha = image.getchannel("A").point(lambda value: 255 if value >= 128 else 0)
+    image.putalpha(alpha)
+    bounds = alpha.getbbox()
     if bounds is None:
         raise SystemExit(f"{path} has no visible pixels")
     image = image.crop(bounds)
