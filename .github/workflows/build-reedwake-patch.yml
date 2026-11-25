@@ -27,6 +27,10 @@ on:
       - tools/kitewatch_wind.inc
       - tools/install_coilmarket.py
       - tools/coilmarket_grid.inc
+      - tools/install_reedwake_overworld.py
+      - tools/install_reedwake_timeline.py
+      - tools/reedwake_timeline.inc
+      - tools/reedwake_timeline_menu.inc
       - tools/reedwake_district_assets.py
       - tools/install_seedvault.py
       - tools/seedvault_lights.inc
@@ -149,6 +153,8 @@ jobs:
           python3 tools/install_seedvault.py "$GITHUB_WORKSPACE/source" assets/seedvault
           python3 tools/install_kitewatch.py "$GITHUB_WORKSPACE/source" assets/kitewatch
           python3 tools/install_coilmarket.py "$GITHUB_WORKSPACE/source" assets/coilmarket
+          python3 tools/install_reedwake_overworld.py "$GITHUB_WORKSPACE/source"
+          python3 tools/install_reedwake_timeline.py "$GITHUB_WORKSPACE/source"
 
           python3 tools/install_title_screen.py assets/title/observatory.png "$GITHUB_WORKSPACE/source"
 
@@ -204,6 +210,11 @@ jobs:
           After Venn, talk to the survey tram operator south of the Kitewatch
           Pokémon Center. Read the live meter in Coilmarket's substation and
           route power to the tram to reach Brin for the fourth badge.
+          In single battles, open FIGHT and press L to add a move. Press R
+          to cycle its intended position, B to undo, and START to commit.
+          Your badges determine the queue limit. Press A for a normal move.
+          On a reaction prompt, A clashes, B guards, and R dodges.
+          Up dodges to air, down underground, and right behind, when eligible.
           Later districts still use Emerald maps.
           EOF
 
