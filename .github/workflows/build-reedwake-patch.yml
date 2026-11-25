@@ -8,6 +8,7 @@ on:
       - .github/workflows/build-reedwake-patch.yml
       - tools/create_bps.py
       - tools/install_science_palette.py
+      - assets/rillfin/**
       - Pokemon - Emerald Version (U).gba
   workflow_dispatch:
 
@@ -70,6 +71,8 @@ jobs:
           git -C source apply --binary "$GITHUB_WORKSPACE/hack/purple-pokedex-gba/fitted/bulbasaur-field-notes.patch"
           git -C source apply --binary "$GITHUB_WORKSPACE/hack/purple-pokedex-gba/fitted/research-delta/research-delta.patch"
           python3 hack/tools/install_science_palette.py "$GITHUB_WORKSPACE/source" "$GITHUB_WORKSPACE/hack/purple-pokedex-gba/science-fantasy/bg_science_fantasy.pal"
+          cp assets/rillfin/front.png source/graphics/pokemon/mudkip/front.png
+          cp assets/rillfin/normal.pal source/graphics/pokemon/mudkip/normal.pal
 
       - name: Build the ROM
         working-directory: source
