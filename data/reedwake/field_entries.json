@@ -22,7 +22,7 @@
     ]
   },
   "Canoplate": {
-    "category": "STONE CANOPY",
+    "category": "RAIN CANOPY",
     "heightDm": 15,
     "weightHg": 740,
     "text": [
@@ -152,7 +152,7 @@
     ]
   },
   "Bogrel": {
-    "category": "ROOT WHISKER",
+    "category": "ROOT HARE",
     "heightDm": 8,
     "weightHg": 175,
     "text": [

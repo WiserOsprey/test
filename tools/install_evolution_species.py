@@ -109,8 +109,8 @@ for name, slot in slots.items():
     entry = field_entries[name]
 
     category = entry["category"]
-    if len(category) > 12:
-        raise SystemExit(f"Pokédex category for {name} exceeds 12 characters")
+    if len(category) > 11:
+        raise SystemExit(f"Pokédex category for {name} exceeds 11 characters")
     dex_pattern = re.compile(rf"(?ms)^    \[NATIONAL_DEX_{slot}\] =\n    \{{.*?^    \}},")
     match = dex_pattern.search(dex_entries)
     if match is None:
