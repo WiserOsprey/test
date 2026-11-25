@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install first-pass stats and names for Reedwake's first evolution tier."""
+"""Install roster stats, abilities, and names for Reedwake's starters."""
 import json
 import re
 import sys
@@ -10,8 +10,11 @@ source = Path(sys.argv[2])
 roster = json.loads(roster_path.read_text(encoding="utf-8"))
 by_name = {entry["name"]: entry for entry in roster["species"]}
 
-# Emerald's existing Hoenn starter evolution slots are reused for these first-pass forms.
+# Reedwake's starters use the three Hoenn starter lines.
 slots = {
+    "Fernut": "TREECKO",
+    "Cindrix": "TORCHIC",
+    "Rillfin": "MUDKIP",
     "Bramblet": "GROVYLE",
     "Canoplate": "SCEPTILE",
     "Flareden": "COMBUSKEN",

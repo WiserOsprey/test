@@ -22,6 +22,11 @@ on:
       - assets/siltstilt/**
       - assets/podtick/**
       - assets/bendruff/**
+      - assets/bramblet/**
+      - assets/canoplate/**
+      - assets/flareden/**
+      - assets/vulprism/**
+      - assets/estuarch/**
       - Pokemon - Emerald Version (U).gba
   workflow_dispatch:
 
@@ -92,6 +97,11 @@ jobs:
           python3 tools/install_fernut_sprites.py assets/siltstilt/front_concept.png assets/siltstilt/back_concept.png source/graphics/pokemon/zigzagoon
           python3 tools/install_fernut_sprites.py assets/podtick/front_concept.png assets/podtick/back_concept.png source/graphics/pokemon/wurmple
           python3 tools/install_fernut_sprites.py assets/bendruff/front.png assets/bendruff/back.png source/graphics/pokemon/marshtomp
+          python3 tools/install_fernut_sprites.py assets/bramblet/front.png assets/bramblet/back.png source/graphics/pokemon/grovyle
+          python3 tools/install_fernut_sprites.py assets/canoplate/front.png assets/canoplate/back.png source/graphics/pokemon/sceptile
+          python3 tools/install_fernut_sprites.py assets/flareden/front.png assets/flareden/back.png source/graphics/pokemon/combusken
+          python3 tools/install_fernut_sprites.py assets/vulprism/front.png assets/vulprism/back.png source/graphics/pokemon/blaziken
+          python3 tools/install_fernut_sprites.py assets/estuarch/front.png assets/estuarch/back.png source/graphics/pokemon/swampert
           python3 tools/install_delta_lab.py data/reedwake/regional_dex.json "$GITHUB_WORKSPACE/source"
 
       - name: Build the ROM
