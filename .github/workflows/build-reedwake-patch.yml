@@ -15,6 +15,9 @@ on:
       - tools/install_rillfin_sprites.py
       - tools/install_fernut_sprites.py
       - tools/emerald_sprites.py
+      - tools/install_title_screen.py
+      - tools/reedwake_title.c
+      - assets/title/**
       - assets/rillfin/**
       - assets/fernut/**
       - assets/cindrix/**
@@ -116,6 +119,8 @@ jobs:
           python3 tools/install_fernut_sprites.py assets/silkettle/front.png assets/silkettle/back.png source/graphics/pokemon/silcoon
           python3 tools/install_fernut_sprites.py assets/latchwing/front.png assets/latchwing/back.png source/graphics/pokemon/beautifly
           python3 tools/install_delta_lab.py data/reedwake/regional_dex.json "$GITHUB_WORKSPACE/source" assets/delta_starters
+
+          python3 tools/install_title_screen.py assets/title/observatory.png "$GITHUB_WORKSPACE/source"
 
       - name: Build the ROM
         working-directory: source
