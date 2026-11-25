@@ -6,6 +6,11 @@ ReedwakeDelta_EventScript_Lab::
 ReedwakeDelta_EventScript_LockmereLab::
 	lockall
 	msgbox ReedwakeDelta_Text_LockmereOffer, MSGBOX_YESNO
+	goto ReedwakeDelta_EventScript_Select
+
+ReedwakeDelta_EventScript_SeedvaultLab::
+	lockall
+	msgbox ReedwakeDelta_Text_SeedvaultOffer, MSGBOX_YESNO
 
 ReedwakeDelta_EventScript_Select:
 	goto_if_eq VAR_RESULT, NO, ReedwakeDelta_EventScript_Close
@@ -21,6 +26,9 @@ ReedwakeDelta_EventScript_Select:
 	goto_if_eq VAR_RESULT, 7, ReedwakeDelta_EventScript_SiltmoleTrial
 	goto_if_eq VAR_RESULT, 8, ReedwakeDelta_EventScript_GategrubTrial
 	goto_if_eq VAR_RESULT, 9, ReedwakeDelta_EventScript_LockmoleTrial
+	goto_if_eq VAR_RESULT, 10, ReedwakeDelta_EventScript_SporeletTrial
+	goto_if_eq VAR_RESULT, 11, ReedwakeDelta_EventScript_BudwingTrial
+	goto_if_eq VAR_RESULT, 12, ReedwakeDelta_EventScript_GraftwingTrial
 	goto_if_ne VAR_RESULT, 1, ReedwakeDelta_EventScript_Unsupported
 	msgbox ReedwakeDelta_Text_Confirm, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, NO, ReedwakeDelta_EventScript_Close
@@ -59,6 +67,18 @@ ReedwakeDelta_EventScript_GategrubTrial:
 
 ReedwakeDelta_EventScript_LockmoleTrial:
 	msgbox ReedwakeDelta_Text_LockmoleTrial, MSGBOX_DEFAULT
+	goto ReedwakeDelta_EventScript_Close
+
+ReedwakeDelta_EventScript_SporeletTrial:
+	msgbox ReedwakeDelta_Text_SporeletTrial, MSGBOX_DEFAULT
+	goto ReedwakeDelta_EventScript_Close
+
+ReedwakeDelta_EventScript_BudwingTrial:
+	msgbox ReedwakeDelta_Text_BudwingTrial, MSGBOX_DEFAULT
+	goto ReedwakeDelta_EventScript_Close
+
+ReedwakeDelta_EventScript_GraftwingTrial:
+	msgbox ReedwakeDelta_Text_GraftwingTrial, MSGBOX_DEFAULT
 	goto ReedwakeDelta_EventScript_Close
 
 ReedwakeDelta_EventScript_Unsupported:
@@ -122,6 +142,28 @@ ReedwakeDelta_Text_LockmoleTrial:
 	.string "Take LOCKMOLE to LOCKMERE CUT.\p"
 	.string "Use a STEEL move with it and\n"
 	.string "win the wild battle.$"
+
+ReedwakeDelta_Text_SeedvaultOffer:
+	.string "SEEDVAULT FIELD STATION\p"
+	.string "Choose a POKéMON for a\n"
+	.string "DELTA experiment?$"
+
+ReedwakeDelta_Text_SporeletTrial:
+	.string "Use SPORELET at the mouth of\n"
+	.string "GLASSROOT TUNNEL.\p"
+	.string "Use a POISON move with it and win\n"
+	.string "the wild battle.$"
+
+ReedwakeDelta_Text_BudwingTrial:
+	.string "Take BUDWING to ALDERBANK.\p"
+	.string "Use a GRASS move while it holds\n"
+	.string "a PECHA BERRY. Win that battle.$"
+
+ReedwakeDelta_Text_GraftwingTrial:
+	.string "Take GRAFTWING to the deepest\n"
+	.string "floor of GLASSROOT TUNNEL.\p"
+	.string "Use a BUG move in harsh sunlight,\n"
+	.string "then win the wild battle.$"
 
 ReedwakeDelta_Text_Unsupported:
 	.string "The lab has no recipe for this\n"

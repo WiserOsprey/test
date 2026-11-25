@@ -27,6 +27,9 @@ delta_slots = {
     "Siltmole": ("GEODUDE", "L"),
     "Gategrub": ("GRAVELER", "M"),
     "Lockmole": ("GOLEM", "N"),
+    "Sporelet": ("SHROOMISH", "O"),
+    "Budwing": ("BRELOOM", "P"),
+    "Graftwing": ("HERACROSS", "Q"),
 }
 delta_moves = {
     "Fernut": [(9, "THUNDER_SHOCK"), (24, "SPARK")],
@@ -41,6 +44,9 @@ delta_moves = {
     "Siltmole": [(7, "WATER_GUN"), (18, "BUBBLE_BEAM")],
     "Gategrub": [(7, "WATER_GUN"), (19, "WATER_PULSE"), (36, "MUDDY_WATER")],
     "Lockmole": [(7, "WATER_GUN"), (19, "WATER_PULSE"), (36, "MUDDY_WATER")],
+    "Sporelet": [(7, "POISON_POWDER"), (19, "ACID")],
+    "Budwing": [(5, "POISON_POWDER"), (19, "ACID"), (32, "SLUDGE")],
+    "Graftwing": [(10, "ACID"), (23, "SLUDGE"), (37, "SLUDGE_BOMB")],
 }
 files = {}
 

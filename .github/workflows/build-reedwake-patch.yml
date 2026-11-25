@@ -20,6 +20,9 @@ on:
       - tools/reedwake_title.c
       - assets/title/**
       - assets/lockmere/**
+      - assets/seedvault/**
+      - tools/install_seedvault.py
+      - tools/seedvault_lights.inc
       - tools/install_lockmere.py
       - tools/lockmere_gates.inc
       - assets/rillfin/**
@@ -125,8 +128,12 @@ jobs:
           python3 tools/install_fernut_sprites.py assets/lockmere/siltmole/front.png assets/lockmere/siltmole/back.png source/graphics/pokemon/geodude
           python3 tools/install_fernut_sprites.py assets/lockmere/gategrub/front.png assets/lockmere/gategrub/back.png source/graphics/pokemon/graveler
           python3 tools/install_fernut_sprites.py assets/lockmere/lockmole/front.png assets/lockmere/lockmole/back.png source/graphics/pokemon/golem
+          python3 tools/install_fernut_sprites.py assets/seedvault/sporelet/front.png assets/seedvault/sporelet/back.png source/graphics/pokemon/shroomish
+          python3 tools/install_fernut_sprites.py assets/seedvault/budwing/front.png assets/seedvault/budwing/back.png source/graphics/pokemon/breloom
+          python3 tools/install_fernut_sprites.py assets/seedvault/graftwing/front.png assets/seedvault/graftwing/back.png source/graphics/pokemon/heracross
           python3 tools/install_delta_lab.py data/reedwake/regional_dex.json "$GITHUB_WORKSPACE/source" assets/delta_starters
           python3 tools/install_lockmere.py "$GITHUB_WORKSPACE/source" assets/lockmere
+          python3 tools/install_seedvault.py "$GITHUB_WORKSPACE/source" assets/seedvault
 
           python3 tools/install_title_screen.py assets/title/observatory.png "$GITHUB_WORKSPACE/source"
 
@@ -160,7 +167,7 @@ jobs:
           mkdir -p dist
           python3 tools/create_bps.py "Pokemon - Emerald Version (U).gba" source/pokeemerald.gba dist/Reedwake-Scientific-Fantasy.bps
           cat > dist/README.txt <<'EOF'
-          Reedwake: The Resonant Tide — Lockmere build
+          Reedwake: The Resonant Tide — Seedvault build
 
           Patch format: BPS
           Required base: unmodified US Pokémon Emerald, revision 0
@@ -175,7 +182,9 @@ jobs:
  
           Head west through Reedbank Path, then north through the woods to
           Lockmere. Open the intake and use the gauge to drain the upper lock.
-          Defeat Tamsin for the first badge. Later districts use Emerald maps.
+          Defeat Tamsin for the first badge, then talk to the survey ferryman
+          just south of the Lockmere Gym. Follow the mirrors in Seedvault to
+          challenge Pell for the second badge. Later districts use Emerald maps.
           EOF
 
       - name: Upload BPS patch only

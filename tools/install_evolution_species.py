@@ -33,6 +33,9 @@ slots = {
     "Siltmole": "GEODUDE",
     "Gategrub": "GRAVELER",
     "Lockmole": "GOLEM",
+    "Sporelet": "SHROOMISH",
+    "Budwing": "BRELOOM",
+    "Graftwing": "HERACROSS",
 }
 type_ids = {
     "Normal": "NORMAL", "Fire": "FIRE", "Water": "WATER", "Electric": "ELECTRIC",
@@ -89,6 +92,8 @@ for name, slot in slots.items():
     block = set_field(block, "bodyColor", "BODY_COLOR_%s" % body_color)
     if entry["familyId"] in (4, 5, 6):
         block = set_field(block, "growthRate", "GROWTH_MEDIUM_FAST")
+    elif entry["family"] == "Graftwing":
+        block = set_field(block, "growthRate", "GROWTH_FLUCTUATING")
     info = info[:match.start()] + block + info[match.end():]
 
     name_pattern = re.compile(rf'(?m)^(\s*\[SPECIES_{slot}\]\s*=\s*)_\("[^"]*"\)(,)')

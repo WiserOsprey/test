@@ -669,5 +669,156 @@
         "EARTHQUAKE"
       ]
     ]
+  },
+  "Sporelet": {
+    "category": "SPORE BUG",
+    "heightDm": 3,
+    "weightHg": 32,
+    "text": [
+      "It makes nests in damp seed trays.",
+      "Its cap catches stray spores and",
+      "drops them where young vines sprout.",
+      "Greenhouse keepers welcome its work."
+    ],
+    "levelUp": [
+      [
+        1,
+        "TACKLE"
+      ],
+      [
+        1,
+        "STRING_SHOT"
+      ],
+      [
+        5,
+        "POISON_STING"
+      ],
+      [
+        8,
+        "LEECH_LIFE"
+      ],
+      [
+        12,
+        "STUN_SPORE"
+      ],
+      [
+        17,
+        "FURY_CUTTER"
+      ],
+      [
+        24,
+        "SILVER_WIND"
+      ],
+      [
+        33,
+        "SIGNAL_BEAM"
+      ]
+    ]
+  },
+  "Budwing": {
+    "category": "LEAF WING",
+    "heightDm": 7,
+    "weightHg": 123,
+    "text": [
+      "Its wing stems mend nicks overnight.",
+      "A grafted stalk gives the next set",
+      "of leaves a new scent. KEEPERS track",
+      "the scent when sharing seed stock."
+    ],
+    "levelUp": [
+      [
+        1,
+        "TACKLE"
+      ],
+      [
+        1,
+        "ABSORB"
+      ],
+      [
+        5,
+        "POISON_STING"
+      ],
+      [
+        10,
+        "FURY_CUTTER"
+      ],
+      [
+        13,
+        "STUN_SPORE"
+      ],
+      [
+        17,
+        "MEGA_DRAIN"
+      ],
+      [
+        22,
+        "GUST"
+      ],
+      [
+        28,
+        "SILVER_WIND"
+      ],
+      [
+        36,
+        "GIGA_DRAIN"
+      ]
+    ]
+  },
+  "Graftwing": {
+    "category": "VINE WING",
+    "heightDm": 14,
+    "weightHg": 284,
+    "text": [
+      "It braids living stems across its",
+      "wings to hold them open in sun.",
+      "Its pollen pod opens only after the",
+      "greenhouse has reached a warm glow."
+    ],
+    "levelUp": [
+      [
+        1,
+        "ABSORB"
+      ],
+      [
+        1,
+        "TACKLE"
+      ],
+      [
+        10,
+        "FURY_CUTTER"
+      ],
+      [
+        13,
+        "STUN_SPORE"
+      ],
+      [
+        17,
+        "MEGA_DRAIN"
+      ],
+      [
+        18,
+        "SILVER_WIND"
+      ],
+      [
+        21,
+        "SUNNY_DAY"
+      ],
+      [
+        25,
+        "GUST"
+      ],
+      [
+        32,
+        "GIGA_DRAIN"
+      ],
+      [
+        39,
+        "SIGNAL_BEAM"
+      ],
+      [
+        46,
+        "SOLAR_BEAM"
+      ]
+    ]
   }
 }
