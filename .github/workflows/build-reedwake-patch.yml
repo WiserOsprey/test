@@ -15,6 +15,7 @@ on:
       - assets/cindrix/**
       - assets/peathare/**
       - assets/siltstilt/**
+      - assets/podtick/**
       - assets/rillfin/**
       - Pokemon - Emerald Version (U).gba
   workflow_dispatch:
@@ -84,6 +85,7 @@ jobs:
           python3 tools/install_fernut_sprites.py assets/cindrix/front_concept.png assets/cindrix/back_concept.png source/graphics/pokemon/torchic
           python3 tools/install_fernut_sprites.py assets/peathare/front_concept.png assets/peathare/back_concept.png source/graphics/pokemon/poochyena
           python3 tools/install_fernut_sprites.py assets/siltstilt/front_concept.png assets/siltstilt/back_concept.png source/graphics/pokemon/zigzagoon
+          python3 tools/install_fernut_sprites.py assets/podtick/front_concept.png assets/podtick/back_concept.png source/graphics/pokemon/wurmple
 
       - name: Build the ROM
         working-directory: source
