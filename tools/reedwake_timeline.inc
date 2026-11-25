@@ -63,6 +63,11 @@ bool8 ReedwakeCanQueue(u16 move)
     }
 }
 
+void ReedwakeCancelQueue(void)
+{
+    sTimeline.requested = 0;
+}
+
 bool8 ReedwakeSetQueue(u8 battler, const u8 *slots, const u8 *positions, u8 count)
 {
     u8 i;
@@ -70,7 +75,10 @@ bool8 ReedwakeSetQueue(u8 battler, const u8 *slots, const u8 *positions, u8 coun
         return FALSE;
     for (i = 0; i < count; i++)
     {
-        u16 move = gBattleMons[battler].moves[slots[i]];
+        u16 move;
+        if (slots[i] >= 4)
+            return FALSE;
+        move = gBattleMons[battler].moves[slots[i]];
         if (!ReedwakeCanQueue(move) || (ReedwakeCharge(move) && i + 1 == ReedwakeQueueLimit()))
             return FALSE;
     }

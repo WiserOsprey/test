@@ -8,6 +8,7 @@ TOOLS = Path(__file__).parent
 HEADER = """
 u8 ReedwakeQueueLimit(void);
 bool8 ReedwakeCanQueue(u16 move);
+void ReedwakeCancelQueue(void);
 bool8 ReedwakeSetQueue(u8 battler, const u8 *slots, const u8 *positions, u8 count);
 s32 ReedwakeTimelineDamage(s32 damage);
 bool8 ReedwakeGuardRecoil(void);
@@ -81,7 +82,7 @@ edit("src/battle_controller_player.c", [
      "    bool32 canSelectTarget = FALSE;\n    struct ChooseMoveStruct *moveInfo = (struct ChooseMoveStruct *)(&gBattleBufferA[gActiveBattler][4]);\n\n"
      "    if (ReedwakeMoveInput(moveInfo))\n        return;\n\n"),
     ("static void PlayerHandleChooseMove(void)\n{\n",
-     "static void PlayerHandleChooseMove(void)\n{\n    sReedwakeCount = 0;\n    sReedwakeAim = 0;\n"),
+     "static void PlayerHandleChooseMove(void)\n{\n    ReedwakeCancelQueue();\n    sReedwakeCount = 0;\n    sReedwakeAim = 0;\n"),
     ("    txtPtr = StringCopy(gDisplayedStringBattle, gText_MoveInterfaceType);",
      "    if (sReedwakeCount || sReedwakeAim)\n    {\n        ReedwakeShowQueue();\n        return;\n    }\n"
      "    txtPtr = StringCopy(gDisplayedStringBattle, gText_MoveInterfaceType);"),
