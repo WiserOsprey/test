@@ -12,6 +12,7 @@ on:
       - tools/install_fernut_sprites.py
       - assets/rillfin/**
       - assets/fernut/**
+      - assets/cindrix/**
       - assets/rillfin/**
       - Pokemon - Emerald Version (U).gba
   workflow_dispatch:
@@ -78,6 +79,7 @@ jobs:
           python3 tools/install_rillfin_sprites.py assets/rillfin/front.png assets/rillfin/back_concept.png assets/rillfin/normal.pal source/graphics/pokemon/mudkip
           cp assets/rillfin/normal.pal source/graphics/pokemon/mudkip/normal.pal
           python3 tools/install_fernut_sprites.py assets/fernut/front_concept.png assets/fernut/back_concept.png source/graphics/pokemon/treecko
+          python3 tools/install_fernut_sprites.py assets/cindrix/front_concept.png assets/cindrix/back_concept.png source/graphics/pokemon/torchic
 
       - name: Build the ROM
         working-directory: source
