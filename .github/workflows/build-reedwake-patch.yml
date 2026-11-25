@@ -58,7 +58,7 @@ jobs:
 
       - name: Apply Reedwake opening patch and fitted Pokédex changes
         run: |
-          git -C source apply --binary "hack/Reedwake - Source.patch"
+          git -C source apply --binary "$GITHUB_WORKSPACE/hack/Reedwake - Source.patch"
           mkdir -p source/graphics/pokedex/purple
           cp hack/purple-pokedex-gba/background.4bpp source/graphics/pokedex/purple/background.4bpp
           cp hack/purple-pokedex-gba/list_underlay.bin source/graphics/pokedex/purple/list_underlay.bin
@@ -66,9 +66,9 @@ jobs:
           cp hack/purple-pokedex-gba/fitted/foreground.4bpp source/graphics/pokedex/purple/foreground.4bpp
           cp hack/purple-pokedex-gba/fitted/foreground.tilemap source/graphics/pokedex/purple/foreground.tilemap
           cp hack/purple-pokedex-gba/fitted/foreground.gbapal source/graphics/pokedex/purple/foreground.gbapal
-          git -C source apply --binary "hack/purple-pokedex-gba/fitted/pokedex-foreground.patch"
-          git -C source apply --binary "hack/purple-pokedex-gba/fitted/bulbasaur-field-notes.patch"
-          git -C source apply --binary "hack/purple-pokedex-gba/fitted/research-delta/research-delta.patch"
+          git -C source apply --binary "$GITHUB_WORKSPACE/hack/purple-pokedex-gba/fitted/pokedex-foreground.patch"
+          git -C source apply --binary "$GITHUB_WORKSPACE/hack/purple-pokedex-gba/fitted/bulbasaur-field-notes.patch"
+          git -C source apply --binary "$GITHUB_WORKSPACE/hack/purple-pokedex-gba/fitted/research-delta/research-delta.patch"
           python3 hack/tools/install_science_palette.py "$GITHUB_WORKSPACE/source" "$GITHUB_WORKSPACE/hack/purple-pokedex-gba/science-fantasy/bg_science_fantasy.pal"
 
       - name: Build the ROM
