@@ -56,7 +56,7 @@ static bool8 ReedwakeMoveInput(const struct ChooseMoveStruct *moveInfo)
     {
         if (ReedwakeSetQueue(gActiveBattler, sReedwakeSlots, sReedwakePositions, sReedwakeCount))
         {
-            u8 target = GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT);
+            u8 target = ReedwakeTimelineTarget(gActiveBattler, moveInfo->moves[sReedwakeSlots[0]]);
             BtlController_EmitTwoReturnValues(B_COMM_TO_ENGINE, B_ACTION_EXEC_SCRIPT,
                 sReedwakeSlots[0] | (target << 8));
             PlayerBufferExecCompleted();

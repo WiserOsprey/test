@@ -47,6 +47,17 @@ static u8 ReedwakeDelay(u16 move)
     u8 power = gBattleMoves[move].power;
     if (gBattleMoves[move].priority > 0)
         return 0;
+    if (gBattleMoves[move].priority < 0)
+        return 100;
+    switch (gBattleMoves[move].effect)
+    {
+    case EFFECT_RAZOR_WIND:
+    case EFFECT_SKY_ATTACK:
+    case EFFECT_SKULL_BASH:
+    case EFFECT_SOLAR_BEAM:
+    case EFFECT_RECHARGE:
+        return 100;
+    }
     if (move == MOVE_TACKLE || move == MOVE_POUND)
         return RW_FAST_LIMIT;
     if (power >= 95)
@@ -58,19 +69,27 @@ static u8 ReedwakeDelay(u16 move)
 
 bool8 ReedwakeCanQueue(u16 move)
 {
-    switch (move)
-    {
-    case MOVE_TACKLE: case MOVE_POUND: case MOVE_SCRATCH: case MOVE_QUICK_ATTACK:
-    case MOVE_WING_ATTACK: case MOVE_AERIAL_ACE: case MOVE_METAL_CLAW:
-    case MOVE_EARTHQUAKE: case MOVE_MAGNITUDE: case MOVE_ROCK_THROW:
-    case MOVE_WATER_GUN: case MOVE_SURF: case MOVE_EMBER: case MOVE_FLAMETHROWER:
-    case MOVE_BITE: case MOVE_SPARK: case MOVE_THUNDER_SHOCK: case MOVE_SHOCK_WAVE:
-    case MOVE_ICE_BEAM: case MOVE_VINE_WHIP: case MOVE_RAZOR_LEAF:
-    case MOVE_DIG: case MOVE_FLY:
-        return TRUE;
-    default:
-        return FALSE;
-    }
+    return move > MOVE_NONE && move < MOVES_COUNT;
+}
+
+u8 ReedwakeTimelineTarget(u8 battler, u16 move)
+{
+    if (move == MOVE_CURSE)
+        return (gBattleMons[battler].types[0] == TYPE_GHOST
+             || gBattleMons[battler].types[1] == TYPE_GHOST) ? battler ^ 1 : battler;
+    if (gBattleMoves[move].target & (MOVE_TARGET_USER | MOVE_TARGET_USER_OR_SELECTED))
+        return battler;
+    return battler ^ 1;
+}
+
+static bool8 ReedwakeIsAttack(u8 battler, u16 move)
+{
+    return gBattleMoves[move].power && ReedwakeTimelineTarget(battler, move) != battler;
+}
+
+static bool8 ReedwakeNeedsStockTurn(u8 battler)
+{
+    return (gBattleMons[battler].status2 & (STATUS2_MULTIPLETURNS | STATUS2_RECHARGE)) != 0;
 }
 
 u8 ReedwakeMoveSpeed(u16 move)
@@ -152,10 +171,8 @@ static void ReedwakePlanOpponent(u8 count)
         {
             slot = (preferred + step) % 4;
             move = gBattleMons[1].moves[slot];
-            if (!remaining[slot] || move == MOVE_NONE
+            if (!remaining[slot] || !ReedwakeCanQueue(move)
              || (ReedwakeCharge(move) && i + 1 == count))
-                continue;
-            if (slot != preferred && !ReedwakeCanQueue(move))
                 continue;
             pick = slot;
             break;
@@ -181,7 +198,7 @@ static void ReedwakeStart(void)
     }
     for (i = 0; i < 2; i++)
     {
-        if (gBattleMons[i].status2 & (STATUS2_MULTIPLETURNS | STATUS2_RECHARGE)
+        if (ReedwakeNeedsStockTurn(i)
          || gDisableStructs[i].encoredMove || gProtectStructs[i].noValidMoves)
         {
             ReedwakeReset();
@@ -204,6 +221,12 @@ static void ReedwakeStart(void)
 
 static bool8 ReedwakeReady(u8 battler)
 {
+    /* The engine resolves mandatory continuation or recharge on ordinary turns. */
+    if (ReedwakeNeedsStockTurn(battler))
+    {
+        sTimeline.next[battler] = sTimeline.count[battler];
+        return FALSE;
+    }
     while (sTimeline.next[battler] < sTimeline.count[battler])
     {
         u8 slot = sTimeline.queue[battler][sTimeline.next[battler]];
@@ -233,6 +256,7 @@ static void ReedwakeAction(u8 battler, u8 multiplier)
     u8 slot = sTimeline.queue[battler][index];
     u16 move = gBattleMons[battler].moves[slot];
     u8 other = battler ^ 1;
+    bool8 attacks = ReedwakeIsAttack(battler, move);
     sTimeline.clock[battler] = sTimeline.now;
     if (ReedwakeCharge(move) && !sTimeline.dug[battler] && !sTimeline.fly[battler])
     {
@@ -244,9 +268,9 @@ static void ReedwakeAction(u8 battler, u8 multiplier)
     }
     if (battler == 0 && !sTimeline.dug[battler] && !sTimeline.fly[battler])
         ReedwakeApplyPosition(battler, move, sTimeline.aim[index]);
-    if (sTimeline.position[battler] == RW_BEHIND && ReedwakeDelay(move) <= RW_FAST_LIMIT)
+    if (attacks && sTimeline.position[battler] == RW_BEHIND && ReedwakeDelay(move) <= RW_FAST_LIMIT)
         multiplier = multiplier * 5 / 4;
-    if (sTimeline.boost[battler])
+    if (attacks && sTimeline.boost[battler])
     {
         multiplier = multiplier * 5 / 4;
         sTimeline.boost[battler] = FALSE;
@@ -259,7 +283,7 @@ static void ReedwakeAction(u8 battler, u8 multiplier)
     gActionsByTurnOrder[1] = B_ACTION_FINISHED;
     gBattleStruct->chosenMovePositions[battler] = slot;
     gChosenMoveByBattler[battler] = move;
-    gBattleStruct->moveTarget[battler] = other;
+    gBattleStruct->moveTarget[battler] = ReedwakeTimelineTarget(battler, move);
     gCurrentTurnActionNumber = 0;
     gCurrentActionFuncId = B_ACTION_USE_MOVE;
     sTimeline.started = TRUE;
@@ -292,7 +316,7 @@ void ReedwakePositionHit(void)
     if (!sTimeline.active || !sTimeline.started)
         return;
     if (sTimeline.dug[gBattlerAttacker] && !(gMoveResultFlags & MOVE_RESULT_NO_EFFECT)
-        && gBattleMoves[gCurrentMove].power)
+        && gBattlerTarget != gBattlerAttacker && gBattleMoves[gCurrentMove].power)
         sTimeline.position[gBattlerTarget] = RW_AIR;
     if (sTimeline.dug[gBattlerAttacker] || sTimeline.fly[gBattlerAttacker])
         sTimeline.position[gBattlerAttacker] = RW_FRONT;
@@ -311,6 +335,7 @@ static void ReedwakeReact(u8 incoming, u8 reaction, u8 position)
     u16 move = ReedwakeMove(incoming);
     u32 strength, pressure, score;
     bool8 clash = reaction == RW_ATTACK && ReedwakeReady(defender)
+                && ReedwakeIsAttack(defender, ReedwakeMove(defender))
                 && !ReedwakeCharge(ReedwakeMove(defender));
     if (reaction == RW_ATTACK && !clash)
         reaction = RW_DEFEND;
@@ -432,14 +457,14 @@ static bool8 ReedwakeAdvance(void)
         BattlePutTextOnWindow(sTimelineBlock, B_WIN_MSG);
         return TRUE;
     }
-    if (sTimeline.position[actor ^ 1] == RW_UNDER && gBattleMoves[move].power
+    if (sTimeline.position[actor ^ 1] == RW_UNDER && ReedwakeIsAttack(actor, move) && !ReedwakeCharge(move)
         && move != MOVE_EARTHQUAKE && move != MOVE_MAGNITUDE)
     {
         ReedwakeDrop(actor);
         BattlePutTextOnWindow(sTimelineBlock, B_WIN_MSG);
         return TRUE;
     }
-    if (actor == 0 && gBattleMoves[move].power && !ReedwakeCharge(move)
+    if (actor == 0 && ReedwakeIsAttack(actor, move) && !ReedwakeCharge(move)
         && ReedwakeCanReact(1, 0) && Random() % 5 == 0)
     {
         if (ReedwakeHasType(1, TYPE_FLYING) && (move == MOVE_EARTHQUAKE || move == MOVE_MAGNITUDE))
@@ -452,7 +477,7 @@ static bool8 ReedwakeAdvance(void)
             ReedwakeReact(actor, RW_DEFEND, RW_FRONT);
         return TRUE;
     }
-    if (actor == 1 && gBattleMoves[move].power && (!ReedwakeCharge(move) || sTimeline.dug[1] || sTimeline.fly[1]) && ReedwakeCanReact(0, 1))
+    if (actor == 1 && ReedwakeIsAttack(actor, move) && (!ReedwakeCharge(move) || sTimeline.dug[1] || sTimeline.fly[1]) && ReedwakeCanReact(0, 1))
     {
         sTimeline.incoming = actor;
         sTimeline.prompt = TRUE;

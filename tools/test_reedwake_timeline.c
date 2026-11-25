@@ -17,13 +17,11 @@ typedef int32_t s32;
 #define JOY_NEW(mask) (keys & (mask))
 enum { DPAD_UP = 1, DPAD_DOWN = 2, DPAD_RIGHT = 4, DPAD_ANY = 7,
        A_BUTTON = 8, B_BUTTON = 16, R_BUTTON = 32 };
-enum { MOVE_NONE, MOVE_TACKLE, MOVE_POUND, MOVE_SCRATCH, MOVE_QUICK_ATTACK,
-       MOVE_WING_ATTACK, MOVE_AERIAL_ACE, MOVE_METAL_CLAW, MOVE_EARTHQUAKE,
-       MOVE_MAGNITUDE, MOVE_ROCK_THROW, MOVE_WATER_GUN, MOVE_SURF, MOVE_EMBER,
-       MOVE_FLAMETHROWER, MOVE_BITE, MOVE_SPARK, MOVE_THUNDER_SHOCK, MOVE_SHOCK_WAVE,
-       MOVE_ICE_BEAM, MOVE_VINE_WHIP, MOVE_RAZOR_LEAF, MOVE_DIG, MOVE_FLY, MOVES_COUNT };
+#include "constants/moves.h"
+#include "constants/battle_move_effects.h"
+enum { MOVE_TARGET_USER = 16, MOVE_TARGET_USER_OR_SELECTED = 2 };
 enum { FLAG_BADGE01_GET = 0, FLAG_BADGE08_GET = 7, STAT_SPEED = 0, STATUS1_PARALYSIS = 1,
-       TYPE_GROUND = 1, TYPE_DARK, TYPE_FLYING, STATUS2_MULTIPLETURNS = 2, STATUS2_RECHARGE = 4,
+       TYPE_GROUND = 1, TYPE_DARK, TYPE_FLYING, TYPE_GHOST, STATUS2_MULTIPLETURNS = 2, STATUS2_RECHARGE = 4,
        B_ACTION_USE_MOVE = 0, B_ACTION_FINISHED = 1, B_WIN_MSG = 0, MOVE_RESULT_NO_EFFECT = 1,
        BATTLE_TYPE_DOUBLE = 1, BATTLE_TYPE_LINK = 2, BATTLE_TYPE_RECORDED = 4, BATTLE_TYPE_FRONTIER = 8,
        BATTLE_TYPE_SAFARI = 16, BATTLE_TYPE_WALLY_TUTORIAL = 32, BATTLE_TYPE_TRAINER = 64 };
@@ -35,7 +33,7 @@ static u8 gBattleOutcome, gMoveResultFlags, gDisplayedStringBattle[128];
 static u16 gBattle_BG0_X, gBattle_BG0_Y, gCurrentMove, gChosenMoveByBattler[2];
 static const u8 gStatStageRatios[][2] = {{1, 1}};
 static const u8 gMoveNames[MOVES_COUNT][16] = {[MOVE_EARTHQUAKE] = "Earthquake", [MOVE_POUND] = "Pound"};
-static struct { u8 priority, power, accuracy; } gBattleMoves[MOVES_COUNT];
+static struct { int8_t priority; u8 power, accuracy, target, effect; } gBattleMoves[MOVES_COUNT];
 static struct { u16 speed, attack, defense, hp, moves[4]; u8 pp[4], statStages[1], types[2];
                 u32 status1, status2; } gBattleMons[2];
 static struct { u16 encoredMove; } gDisableStructs[2];
@@ -234,6 +232,37 @@ int main(void)
     assert(ReedwakeAdvance() && gBattlerByTurnOrder[0] == 0 && sTimeline.now == 400);
     sTimeline.started = FALSE;
     assert(ReedwakeAdvance() && sTimeline.prompt && sTimeline.now == 500);
+    {
+        u16 move;
+        for (move = MOVE_NONE + 1; move < MOVES_COUNT; move++)
+        {
+            assert(ReedwakeCanQueue(move));
+            assert(ReedwakeMoveSpeed(move) <= 100);
+        }
+        assert(!ReedwakeCanQueue(MOVE_UNAVAILABLE));
+    }
+    Setup(MOVE_RECOVER, MOVE_POUND);
+    gBattleMoves[MOVE_RECOVER].power = 0;
+    gBattleMoves[MOVE_RECOVER].target = MOVE_TARGET_USER;
+    assert(ReedwakeSetQueue(0, slots, aim, 3));
+    ReedwakeStart();
+    sTimeline.boost[0] = TRUE;
+    ReedwakeAction(0, 100);
+    assert(gBattleStruct->moveTarget[0] == 0 && sTimeline.boost[0]);
+    assert(ReedwakeTimelineTarget(0, MOVE_CURSE) == 0);
+    gBattleMons[0].types[0] = TYPE_GHOST;
+    assert(ReedwakeTimelineTarget(0, MOVE_CURSE) == 1);
+    gBattleMons[0].status2 = STATUS2_RECHARGE;
+    sTimeline.started = FALSE;
+    assert(ReedwakeAdvance() && sTimeline.closingAction && sTimeline.prompt);
+    keys = B_BUTTON;
+    assert(ReedwakeAdvance() && sTimeline.next[0] == 3 && sTimeline.next[1] == 1);
+    assert(!ReedwakeAdvance());
+
+    gBattleMoves[MOVE_SOLAR_BEAM].effect = EFFECT_SOLAR_BEAM;
+    gBattleMoves[MOVE_COUNTER].priority = -5;
+    assert(ReedwakeMoveSpeed(MOVE_SOLAR_BEAM) == 100);
+    assert(ReedwakeMoveSpeed(MOVE_COUNTER) == 100);
     puts("Reedwake timeline checks passed.");
     return 0;
 }

@@ -172,7 +172,7 @@ jobs:
 
       - name: Check the battle timeline scheduler
         run: |
-          cc -std=c99 -O2 tools/test_reedwake_timeline.c -o "$RUNNER_TEMP/reedwake-timeline-test"
+          cc -std=c99 -O2 -I source/include tools/test_reedwake_timeline.c -o "$RUNNER_TEMP/reedwake-timeline-test"
           "$RUNNER_TEMP/reedwake-timeline-test"
 
       - name: Boot the ROM in mGBA
@@ -221,7 +221,8 @@ jobs:
           Your badges determine the queue limit. Press A for a normal move.
           The opponent plans the same number of slots. On a reaction prompt,
           A clashes, B guards, and R dodges. Only Clash spends a queued move.
-          Move details show Speed from 0 (fastest) to 100 (slowest), or ---.
+          All moves have Speed from 0 (fastest) to 100 (slowest).
+          Mandatory repeats, charge turns, and recharge follow standard battle rules.
           When a queue finishes, the other side has at most one more action.
           A stagger can still open the way for the rest of your queue.
           Up dodges to air, down underground, and right behind, when eligible.

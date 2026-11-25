@@ -8,6 +8,7 @@ TOOLS = Path(__file__).parent
 HEADER = """
 u8 ReedwakeQueueLimit(void);
 bool8 ReedwakeCanQueue(u16 move);
+u8 ReedwakeTimelineTarget(u8 battler, u16 move);
 u8 ReedwakeMoveSpeed(u16 move);
 void ReedwakeCancelQueue(void);
 bool8 ReedwakeSetQueue(u8 battler, const u8 *slots, const u8 *positions, u8 count);
