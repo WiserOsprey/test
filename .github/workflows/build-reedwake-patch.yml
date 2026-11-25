@@ -23,6 +23,12 @@ on:
       - assets/podtick/**
       - assets/bendruff/**
       - assets/delta_starters/**
+      - assets/bogrel/**
+      - assets/mirehart/**
+      - assets/reedrake/**
+      - assets/fenstilt/**
+      - assets/silkettle/**
+      - assets/latchwing/**
       - assets/bramblet/**
       - assets/canoplate/**
       - assets/flareden/**
@@ -103,6 +109,12 @@ jobs:
           python3 tools/install_fernut_sprites.py assets/flareden/front.png assets/flareden/back.png source/graphics/pokemon/combusken
           python3 tools/install_fernut_sprites.py assets/vulprism/front.png assets/vulprism/back.png source/graphics/pokemon/blaziken
           python3 tools/install_fernut_sprites.py assets/estuarch/front.png assets/estuarch/back.png source/graphics/pokemon/swampert
+          python3 tools/install_fernut_sprites.py assets/bogrel/front.png assets/bogrel/back.png source/graphics/pokemon/mightyena
+          python3 tools/install_fernut_sprites.py assets/mirehart/front.png assets/mirehart/back.png source/graphics/pokemon/absol
+          python3 tools/install_fernut_sprites.py assets/reedrake/front.png assets/reedrake/back.png source/graphics/pokemon/linoone
+          python3 tools/install_fernut_sprites.py assets/fenstilt/front.png assets/fenstilt/back.png source/graphics/pokemon/skarmory
+          python3 tools/install_fernut_sprites.py assets/silkettle/front.png assets/silkettle/back.png source/graphics/pokemon/silcoon
+          python3 tools/install_fernut_sprites.py assets/latchwing/front.png assets/latchwing/back.png source/graphics/pokemon/beautifly
           python3 tools/install_delta_lab.py data/reedwake/regional_dex.json "$GITHUB_WORKSPACE/source" assets/delta_starters
 
       - name: Build the ROM
@@ -120,7 +132,7 @@ jobs:
           mkdir -p dist
           python3 tools/create_bps.py "Pokemon - Emerald Version (U).gba" source/pokeemerald.gba dist/Reedwake-Scientific-Fantasy.bps
           cat > dist/README.txt <<'EOF'
-          Reedwake: Scientific Fantasy — prototype patch
+          Reedwake: The Resonant Tide — opening prototype
 
           Patch format: BPS
           Required base: unmodified US Pokémon Emerald, revision 0
@@ -129,7 +141,12 @@ jobs:
           Apply the BPS patch to a legally obtained clean base ROM with a BPS patcher.
           This artifact contains the patch only; it does not contain the game ROM.
 
-          This is an early opening and Pokédex prototype, not the completed regional campaign.
+          Start a new game to play the Brackenhaven opening. Complete Iona's
+          first battle at Tide Reach, then return to the lab and get the Pokédex.
+          Use the machine by the lab wall to read your party's Delta trial hints.
+ 
+          This prototype covers the three starter lines and the first wild
+          families. It uses the Emerald campaign beyond the opening survey.
           EOF
 
       - name: Upload BPS patch only

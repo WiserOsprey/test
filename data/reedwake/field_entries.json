@@ -1,0 +1,526 @@
+{
+  "Fernut": {
+    "category": "RAIN SEED",
+    "heightDm": 4,
+    "weightHg": 49,
+    "text": [
+      "Fernut tucks its tail under its shell",
+      "to catch the first rain of the day.",
+      "Its crown frond unfolds when the",
+      "water inside is warm enough."
+    ]
+  },
+  "Bramblet": {
+    "category": "TWIG CROWN",
+    "heightDm": 8,
+    "weightHg": 190,
+    "text": [
+      "Bramblet gauges the depth of a pool",
+      "by tapping the bank with its tail.",
+      "When the reed beds run dry it shares",
+      "the water cached beneath its shell."
+    ]
+  },
+  "Canoplate": {
+    "category": "STONE CANOPY",
+    "heightDm": 15,
+    "weightHg": 740,
+    "text": [
+      "Layers of shale brace its broad shell.",
+      "Its leaves funnel rainfall into tiny",
+      "channels in the rock. Small Pokémon",
+      "gather beneath it during storms."
+    ]
+  },
+  "Cindrix": {
+    "category": "EMBER CREST",
+    "heightDm": 4,
+    "weightHg": 44,
+    "text": [
+      "Its crest feathers hold a low heat",
+      "even after the tail flame goes out.",
+      "Surveyors watch for the feathers to",
+      "lift when a pressure front moves in."
+    ]
+  },
+  "Flareden": {
+    "category": "HEARTH FOX",
+    "heightDm": 9,
+    "weightHg": 205,
+    "text": [
+      "Flareden nests beneath stone bridges.",
+      "It spreads its tail feathers to judge",
+      "how the wind will carry sparks",
+      "before it lights the nest's hearth."
+    ]
+  },
+  "Vulprism": {
+    "category": "PRISM CREST",
+    "heightDm": 15,
+    "weightHg": 495,
+    "text": [
+      "A prism in its crest bends the light",
+      "of its tail. At night a pack can signal",
+      "across a valley without illuminating",
+      "the paths between its members."
+    ]
+  },
+  "Rillfin": {
+    "category": "RIVER PUP",
+    "heightDm": 5,
+    "weightHg": 74,
+    "text": [
+      "Rillfin uses its forked tail to turn",
+      "in shallow rapids. It can tell which",
+      "side of a rock hides a pocket of",
+      "calmer water before diving."
+    ]
+  },
+  "Bendruff": {
+    "category": "PADDLE TAIL",
+    "heightDm": 9,
+    "weightHg": 278,
+    "text": [
+      "When a rising river floods its den,",
+      "Bendruff braces its paddle against",
+      "the current and guides the smaller",
+      "Rillfin toward the bank."
+    ]
+  },
+  "Estuarch": {
+    "category": "TIDE GUARD",
+    "heightDm": 16,
+    "weightHg": 764,
+    "text": [
+      "Its shoulder plates spread the force",
+      "of a wave across its broad frame.",
+      "Surveyors use the marks left by its",
+      "paws to check how high a tide rose."
+    ]
+  },
+  "Peathare": {
+    "category": "PEAT HARE",
+    "heightDm": 4,
+    "weightHg": 48,
+    "text": [
+      "Peathare's root whiskers pick up the",
+      "sound of water moving beneath peat.",
+      "It stamps a code with its hind feet",
+      "before it crosses a soft patch."
+    ],
+    "levelUp": [
+      [
+        1,
+        "TACKLE"
+      ],
+      [
+        1,
+        "GROWL"
+      ],
+      [
+        5,
+        "ABSORB"
+      ],
+      [
+        8,
+        "QUICK_ATTACK"
+      ],
+      [
+        12,
+        "LEECH_SEED"
+      ],
+      [
+        16,
+        "RAZOR_LEAF"
+      ],
+      [
+        21,
+        "STUN_SPORE"
+      ],
+      [
+        26,
+        "GIGA_DRAIN"
+      ],
+      [
+        33,
+        "SYNTHESIS"
+      ],
+      [
+        40,
+        "AGILITY"
+      ]
+    ]
+  },
+  "Bogrel": {
+    "category": "ROOT WHISKER",
+    "heightDm": 8,
+    "weightHg": 175,
+    "text": [
+      "Bogrel trails its root whiskers on",
+      "the ground as it runs. It can follow",
+      "a burrowing Pokémon by the pulses",
+      "that travel through the mud."
+    ],
+    "levelUp": [
+      [
+        1,
+        "TACKLE"
+      ],
+      [
+        1,
+        "GROWL"
+      ],
+      [
+        5,
+        "ABSORB"
+      ],
+      [
+        8,
+        "QUICK_ATTACK"
+      ],
+      [
+        12,
+        "LEECH_SEED"
+      ],
+      [
+        16,
+        "MUD_SHOT"
+      ],
+      [
+        22,
+        "RAZOR_LEAF"
+      ],
+      [
+        29,
+        "DIG"
+      ],
+      [
+        34,
+        "SYNTHESIS"
+      ],
+      [
+        41,
+        "GIGA_DRAIN"
+      ],
+      [
+        47,
+        "EARTHQUAKE"
+      ]
+    ]
+  },
+  "Mirehart": {
+    "category": "BOG RUNNER",
+    "heightDm": 13,
+    "weightHg": 463,
+    "text": [
+      "A Mirehart's bark collar marks the",
+      "watershed it grew up in. Its paws",
+      "spread on contact with soft peat,",
+      "allowing it to sprint across a bog."
+    ],
+    "levelUp": [
+      [
+        1,
+        "TACKLE"
+      ],
+      [
+        1,
+        "GROWL"
+      ],
+      [
+        5,
+        "ABSORB"
+      ],
+      [
+        8,
+        "QUICK_ATTACK"
+      ],
+      [
+        12,
+        "LEECH_SEED"
+      ],
+      [
+        16,
+        "MUD_SHOT"
+      ],
+      [
+        22,
+        "RAZOR_LEAF"
+      ],
+      [
+        29,
+        "DIG"
+      ],
+      [
+        34,
+        "SYNTHESIS"
+      ],
+      [
+        40,
+        "LEAF_BLADE"
+      ],
+      [
+        47,
+        "EARTHQUAKE"
+      ]
+    ]
+  },
+  "Siltstilt": {
+    "category": "SILT WADER",
+    "heightDm": 5,
+    "weightHg": 58,
+    "text": [
+      "Siltstilt stands still while mud",
+      "settles on its legs. The markings on",
+      "its face help the flock recognize each",
+      "other at the edge of the reeds."
+    ],
+    "levelUp": [
+      [
+        1,
+        "PECK"
+      ],
+      [
+        1,
+        "GROWL"
+      ],
+      [
+        5,
+        "QUICK_ATTACK"
+      ],
+      [
+        9,
+        "SAND_ATTACK"
+      ],
+      [
+        13,
+        "WING_ATTACK"
+      ],
+      [
+        17,
+        "FOCUS_ENERGY"
+      ],
+      [
+        23,
+        "AERIAL_ACE"
+      ],
+      [
+        30,
+        "SWIFT"
+      ],
+      [
+        37,
+        "AGILITY"
+      ]
+    ]
+  },
+  "Reedrake": {
+    "category": "REED WADER",
+    "heightDm": 10,
+    "weightHg": 195,
+    "text": [
+      "Reedrake angles its long tail plumes",
+      "into the wind like a weather vane.",
+      "When a squall approaches, the flock",
+      "folds low among the reed beds."
+    ],
+    "levelUp": [
+      [
+        1,
+        "PECK"
+      ],
+      [
+        1,
+        "GROWL"
+      ],
+      [
+        5,
+        "QUICK_ATTACK"
+      ],
+      [
+        9,
+        "SAND_ATTACK"
+      ],
+      [
+        13,
+        "WING_ATTACK"
+      ],
+      [
+        17,
+        "GUST"
+      ],
+      [
+        23,
+        "AERIAL_ACE"
+      ],
+      [
+        30,
+        "AGILITY"
+      ],
+      [
+        34,
+        "MIST"
+      ],
+      [
+        42,
+        "AIR_CUTTER"
+      ]
+    ]
+  },
+  "Fenstilt": {
+    "category": "WAVE WADER",
+    "heightDm": 17,
+    "weightHg": 497,
+    "text": [
+      "Fenstilt drags a wingtip in the water",
+      "to spot fish by their ripples. Its long",
+      "flight feathers stay dry, even when",
+      "it wades into a breaking wave."
+    ],
+    "levelUp": [
+      [
+        1,
+        "PECK"
+      ],
+      [
+        1,
+        "GROWL"
+      ],
+      [
+        5,
+        "QUICK_ATTACK"
+      ],
+      [
+        9,
+        "WATER_GUN"
+      ],
+      [
+        13,
+        "WING_ATTACK"
+      ],
+      [
+        17,
+        "GUST"
+      ],
+      [
+        23,
+        "AERIAL_ACE"
+      ],
+      [
+        30,
+        "AGILITY"
+      ],
+      [
+        34,
+        "BUBBLE_BEAM"
+      ],
+      [
+        42,
+        "AIR_CUTTER"
+      ],
+      [
+        48,
+        "HYDRO_PUMP"
+      ]
+    ]
+  },
+  "Podtick": {
+    "category": "SEED POD",
+    "heightDm": 3,
+    "weightHg": 32,
+    "text": [
+      "Podtick wiggles inside its shell to",
+      "scatter the loose seeds it collects.",
+      "After a rain, its trail looks like a",
+      "row of tiny green survey flags."
+    ],
+    "levelUp": [
+      [
+        1,
+        "TACKLE"
+      ],
+      [
+        1,
+        "STRING_SHOT"
+      ],
+      [
+        4,
+        "POISON_STING"
+      ],
+      [
+        7,
+        "LEECH_LIFE"
+      ],
+      [
+        13,
+        "STUN_SPORE"
+      ]
+    ]
+  },
+  "Silkettle": {
+    "category": "KILN COCOON",
+    "heightDm": 5,
+    "weightHg": 90,
+    "text": [
+      "Silkettle lines its clay-like shell",
+      "with bands of insulating silk. Its",
+      "temperature stays steady even when",
+      "the air in the marsh turns cold."
+    ],
+    "levelUp": [
+      [
+        1,
+        "HARDEN"
+      ],
+      [
+        7,
+        "HARDEN"
+      ]
+    ]
+  },
+  "Latchwing": {
+    "category": "CLASP MOTH",
+    "heightDm": 9,
+    "weightHg": 189,
+    "text": [
+      "The clasps on Latchwing's wings hold",
+      "each husk tight against its body.",
+      "When it leaves its nest, the clasps",
+      "release together with a sharp click."
+    ],
+    "levelUp": [
+      [
+        1,
+        "HARDEN"
+      ],
+      [
+        10,
+        "METAL_CLAW"
+      ],
+      [
+        15,
+        "SILVER_WIND"
+      ],
+      [
+        20,
+        "WING_ATTACK"
+      ],
+      [
+        25,
+        "IRON_DEFENSE"
+      ],
+      [
+        30,
+        "TWINEEDLE"
+      ],
+      [
+        36,
+        "STEEL_WING"
+      ],
+      [
+        43,
+        "SIGNAL_BEAM"
+      ]
+    ]
+  }
+}
