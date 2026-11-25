@@ -11,6 +11,11 @@ ReedwakeDelta_EventScript_LockmereLab::
 ReedwakeDelta_EventScript_SeedvaultLab::
 	lockall
 	msgbox ReedwakeDelta_Text_SeedvaultOffer, MSGBOX_YESNO
+	goto ReedwakeDelta_EventScript_Select
+
+ReedwakeDelta_EventScript_KitewatchLab::
+	lockall
+	msgbox ReedwakeDelta_Text_KitewatchOffer, MSGBOX_YESNO
 
 ReedwakeDelta_EventScript_Select:
 	goto_if_eq VAR_RESULT, NO, ReedwakeDelta_EventScript_Close
@@ -29,6 +34,9 @@ ReedwakeDelta_EventScript_Select:
 	goto_if_eq VAR_RESULT, 10, ReedwakeDelta_EventScript_SporeletTrial
 	goto_if_eq VAR_RESULT, 11, ReedwakeDelta_EventScript_BudwingTrial
 	goto_if_eq VAR_RESULT, 12, ReedwakeDelta_EventScript_GraftwingTrial
+	goto_if_eq VAR_RESULT, 13, ReedwakeDelta_EventScript_GullitTrial
+	goto_if_eq VAR_RESULT, 14, ReedwakeDelta_EventScript_VaneagleTrial
+	goto_if_eq VAR_RESULT, 15, ReedwakeDelta_EventScript_GalegullTrial
 	goto_if_ne VAR_RESULT, 1, ReedwakeDelta_EventScript_Unsupported
 	msgbox ReedwakeDelta_Text_Confirm, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, NO, ReedwakeDelta_EventScript_Close
@@ -79,6 +87,18 @@ ReedwakeDelta_EventScript_BudwingTrial:
 
 ReedwakeDelta_EventScript_GraftwingTrial:
 	msgbox ReedwakeDelta_Text_GraftwingTrial, MSGBOX_DEFAULT
+	goto ReedwakeDelta_EventScript_Close
+
+ReedwakeDelta_EventScript_GullitTrial:
+	msgbox ReedwakeDelta_Text_GullitTrial, MSGBOX_DEFAULT
+	goto ReedwakeDelta_EventScript_Close
+
+ReedwakeDelta_EventScript_VaneagleTrial:
+	msgbox ReedwakeDelta_Text_VaneagleTrial, MSGBOX_DEFAULT
+	goto ReedwakeDelta_EventScript_Close
+
+ReedwakeDelta_EventScript_GalegullTrial:
+	msgbox ReedwakeDelta_Text_GalegullTrial, MSGBOX_DEFAULT
 	goto ReedwakeDelta_EventScript_Close
 
 ReedwakeDelta_EventScript_Unsupported:
@@ -163,6 +183,26 @@ ReedwakeDelta_Text_GraftwingTrial:
 	.string "Take GRAFTWING to the deepest\n"
 	.string "floor of GLASSROOT TUNNEL.\p"
 	.string "Use a BUG move in harsh sunlight,\n"
+	.string "then win the wild battle.$"
+
+ReedwakeDelta_Text_KitewatchOffer:
+	.string "KITEWATCH FIELD STATION\p"
+	.string "Choose a POKéMON for a\n"
+	.string "DELTA experiment?$"
+
+ReedwakeDelta_Text_GullitTrial:
+	.string "Bring GULLIT to LEEWARD SHELF.\p"
+	.string "Use a FLYING move while it holds\n"
+	.string "a CHERI BERRY. Win that battle.$"
+
+ReedwakeDelta_Text_VaneagleTrial:
+	.string "On GALE RUN, use a FLYING move\n"
+	.string "with VANEAGLE at half HP or less.\p"
+	.string "Then win the wild battle.$"
+
+ReedwakeDelta_Text_GalegullTrial:
+	.string "Take GALEGULL to TIDEBREAK PASS.\p"
+	.string "Use a WATER move while it's raining,\n"
 	.string "then win the wild battle.$"
 
 ReedwakeDelta_Text_Unsupported:

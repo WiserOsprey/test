@@ -30,6 +30,9 @@ delta_slots = {
     "Sporelet": ("SHROOMISH", "O"),
     "Budwing": ("BRELOOM", "P"),
     "Graftwing": ("HERACROSS", "Q"),
+    "Gullit": ("TAILLOW", "R"),
+    "Vaneagle": ("SWELLOW", "S"),
+    "Galegull": ("TROPIUS", "T"),
 }
 delta_moves = {
     "Fernut": [(9, "THUNDER_SHOCK"), (24, "SPARK")],
@@ -47,6 +50,9 @@ delta_moves = {
     "Sporelet": [(7, "POISON_POWDER"), (19, "ACID")],
     "Budwing": [(5, "POISON_POWDER"), (19, "ACID"), (32, "SLUDGE")],
     "Graftwing": [(10, "ACID"), (23, "SLUDGE"), (37, "SLUDGE_BOMB")],
+    "Gullit": [(7, "THUNDER_SHOCK"), (16, "SPARK"), (28, "SHOCK_WAVE")],
+    "Vaneagle": [(8, "THUNDER_SHOCK"), (18, "SPARK"), (25, "SHOCK_WAVE"), (39, "THUNDERBOLT")],
+    "Galegull": [(10, "THUNDER_SHOCK"), (20, "SPARK"), (28, "SHOCK_WAVE"), (37, "THUNDERBOLT")],
 }
 files = {}
 

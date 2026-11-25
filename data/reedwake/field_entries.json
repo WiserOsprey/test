@@ -820,5 +820,156 @@
         "SOLAR_BEAM"
       ]
     ]
+  },
+  "Gullit": {
+    "category": "FORK TAIL",
+    "heightDm": 5,
+    "weightHg": 49,
+    "text": [
+      "Its little tail forks flutter apart",
+      "when the air begins to turn. Ridge",
+      "keepers watch for that flick before",
+      "a flag can register the gust."
+    ],
+    "levelUp": [
+      [
+        1,
+        "PECK"
+      ],
+      [
+        1,
+        "GROWL"
+      ],
+      [
+        5,
+        "QUICK_ATTACK"
+      ],
+      [
+        8,
+        "GUST"
+      ],
+      [
+        13,
+        "FOCUS_ENERGY"
+      ],
+      [
+        18,
+        "WING_ATTACK"
+      ],
+      [
+        24,
+        "AERIAL_ACE"
+      ],
+      [
+        33,
+        "AGILITY"
+      ]
+    ]
+  },
+  "Vaneagle": {
+    "category": "WIND VANE",
+    "heightDm": 10,
+    "weightHg": 216,
+    "text": [
+      "It angles its long tail into a gust",
+      "to stay still over the ridge. When",
+      "the wind fails, it folds one wing",
+      "and drops into a sudden turn."
+    ],
+    "levelUp": [
+      [
+        1,
+        "PECK"
+      ],
+      [
+        1,
+        "QUICK_ATTACK"
+      ],
+      [
+        8,
+        "GUST"
+      ],
+      [
+        14,
+        "WING_ATTACK"
+      ],
+      [
+        18,
+        "FOCUS_ENERGY"
+      ],
+      [
+        22,
+        "AERIAL_ACE"
+      ],
+      [
+        26,
+        "AGILITY"
+      ],
+      [
+        33,
+        "AIR_CUTTER"
+      ],
+      [
+        43,
+        "SKY_ATTACK"
+      ]
+    ]
+  },
+  "Galegull": {
+    "category": "STORM WING",
+    "heightDm": 18,
+    "weightHg": 432,
+    "text": [
+      "Its broad wings catch the air that",
+      "bounces off waves. GALEGULL can",
+      "skim a rainy inlet for hours without",
+      "once brushing the water below."
+    ],
+    "levelUp": [
+      [
+        1,
+        "PECK"
+      ],
+      [
+        1,
+        "QUICK_ATTACK"
+      ],
+      [
+        8,
+        "GUST"
+      ],
+      [
+        14,
+        "WING_ATTACK"
+      ],
+      [
+        22,
+        "AERIAL_ACE"
+      ],
+      [
+        24,
+        "WATER_GUN"
+      ],
+      [
+        26,
+        "AGILITY"
+      ],
+      [
+        27,
+        "RAIN_DANCE"
+      ],
+      [
+        31,
+        "WATER_PULSE"
+      ],
+      [
+        38,
+        "AIR_CUTTER"
+      ],
+      [
+        46,
+        "HYDRO_PUMP"
+      ]
+    ]
   }
 }

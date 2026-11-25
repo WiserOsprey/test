@@ -21,6 +21,10 @@ on:
       - assets/title/**
       - assets/lockmere/**
       - assets/seedvault/**
+      - assets/kitewatch/**
+      - tools/install_kitewatch.py
+      - tools/kitewatch_wind.inc
+      - tools/reedwake_district_assets.py
       - tools/install_seedvault.py
       - tools/seedvault_lights.inc
       - tools/install_lockmere.py
@@ -131,9 +135,13 @@ jobs:
           python3 tools/install_fernut_sprites.py assets/seedvault/sporelet/front.png assets/seedvault/sporelet/back.png source/graphics/pokemon/shroomish
           python3 tools/install_fernut_sprites.py assets/seedvault/budwing/front.png assets/seedvault/budwing/back.png source/graphics/pokemon/breloom
           python3 tools/install_fernut_sprites.py assets/seedvault/graftwing/front.png assets/seedvault/graftwing/back.png source/graphics/pokemon/heracross
+          python3 tools/install_fernut_sprites.py assets/kitewatch/gullit/front.png assets/kitewatch/gullit/back.png source/graphics/pokemon/taillow
+          python3 tools/install_fernut_sprites.py assets/kitewatch/vaneagle/front.png assets/kitewatch/vaneagle/back.png source/graphics/pokemon/swellow
+          python3 tools/install_fernut_sprites.py assets/kitewatch/galegull/front.png assets/kitewatch/galegull/back.png source/graphics/pokemon/tropius
           python3 tools/install_delta_lab.py data/reedwake/regional_dex.json "$GITHUB_WORKSPACE/source" assets/delta_starters
           python3 tools/install_lockmere.py "$GITHUB_WORKSPACE/source" assets/lockmere
           python3 tools/install_seedvault.py "$GITHUB_WORKSPACE/source" assets/seedvault
+          python3 tools/install_kitewatch.py "$GITHUB_WORKSPACE/source" assets/kitewatch
 
           python3 tools/install_title_screen.py assets/title/observatory.png "$GITHUB_WORKSPACE/source"
 
@@ -167,7 +175,7 @@ jobs:
           mkdir -p dist
           python3 tools/create_bps.py "Pokemon - Emerald Version (U).gba" source/pokeemerald.gba dist/Reedwake-Scientific-Fantasy.bps
           cat > dist/README.txt <<'EOF'
-          Reedwake: The Resonant Tide — Seedvault build
+          Reedwake: The Resonant Tide — Kitewatch build
 
           Patch format: BPS
           Required base: unmodified US Pokémon Emerald, revision 0
@@ -184,7 +192,9 @@ jobs:
           Lockmere. Open the intake and use the gauge to drain the upper lock.
           Defeat Tamsin for the first badge, then talk to the survey ferryman
           just south of the Lockmere Gym. Follow the mirrors in Seedvault to
-          challenge Pell for the second badge. Later districts use Emerald maps.
+          challenge Pell for the second badge. Then take the ridge ferry from
+          Seedvault to Kitewatch and shift the platforms to challenge Venn.
+          Later districts still use Emerald maps.
           EOF
 
       - name: Upload BPS patch only
