@@ -971,5 +971,176 @@
         "HYDRO_PUMP"
       ]
     ]
+  },
+  "Tramkit": {
+    "category": "LIVE WIRE",
+    "heightDm": 5,
+    "weightHg": 89,
+    "text": [
+      "TRAMKIT follows the faint buzz of",
+      "buried cables. Its whiskers tingle",
+      "near a break in the line, drawing it",
+      "to places that need repairs."
+    ],
+    "levelUp": [
+      [
+        1,
+        "TACKLE"
+      ],
+      [
+        1,
+        "LEER"
+      ],
+      [
+        5,
+        "THUNDER_SHOCK"
+      ],
+      [
+        10,
+        "QUICK_ATTACK"
+      ],
+      [
+        14,
+        "THUNDER_WAVE"
+      ],
+      [
+        19,
+        "SPARK"
+      ],
+      [
+        24,
+        "BITE"
+      ],
+      [
+        30,
+        "SHOCK_WAVE"
+      ],
+      [
+        37,
+        "AGILITY"
+      ],
+      [
+        43,
+        "THUNDERBOLT"
+      ]
+    ]
+  },
+  "Voltrack": {
+    "category": "TRACK RUN",
+    "heightDm": 10,
+    "weightHg": 302,
+    "text": [
+      "Its feet grip the tram rails with",
+      "magnetism. On tight curves, VOLTRACK",
+      "sheds sparks from the outer rail as",
+      "it leans into the bend."
+    ],
+    "levelUp": [
+      [
+        1,
+        "TACKLE"
+      ],
+      [
+        1,
+        "LEER"
+      ],
+      [
+        5,
+        "THUNDER_SHOCK"
+      ],
+      [
+        10,
+        "QUICK_ATTACK"
+      ],
+      [
+        14,
+        "THUNDER_WAVE"
+      ],
+      [
+        17,
+        "SPARK"
+      ],
+      [
+        22,
+        "BITE"
+      ],
+      [
+        27,
+        "SHOCK_WAVE"
+      ],
+      [
+        33,
+        "AGILITY"
+      ],
+      [
+        40,
+        "THUNDERBOLT"
+      ],
+      [
+        47,
+        "CRUNCH"
+      ]
+    ]
+  },
+  "Arcrail": {
+    "category": "TRACTION",
+    "heightDm": 17,
+    "weightHg": 914,
+    "text": [
+      "Iron grains lodge in the grooves",
+      "along its back. ARCRAIL shakes them",
+      "free in a burst of current that leaves",
+      "a branching pattern in the sand."
+    ],
+    "levelUp": [
+      [
+        1,
+        "TACKLE"
+      ],
+      [
+        5,
+        "THUNDER_SHOCK"
+      ],
+      [
+        10,
+        "QUICK_ATTACK"
+      ],
+      [
+        14,
+        "THUNDER_WAVE"
+      ],
+      [
+        17,
+        "SPARK"
+      ],
+      [
+        22,
+        "BITE"
+      ],
+      [
+        27,
+        "SHOCK_WAVE"
+      ],
+      [
+        30,
+        "METAL_CLAW"
+      ],
+      [
+        33,
+        "SANDSTORM"
+      ],
+      [
+        37,
+        "AGILITY"
+      ],
+      [
+        43,
+        "THUNDERBOLT"
+      ],
+      [
+        49,
+        "IRON_TAIL"
+      ]
+    ]
   }
 }

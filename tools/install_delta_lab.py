@@ -32,6 +32,9 @@ delta_slots = {
     "Graftwing": ("HERACROSS", "Q"),
     "Gullit": ("TAILLOW", "R"),
     "Vaneagle": ("SWELLOW", "S"),
+    "Tramkit": ("ELECTRIKE", "U"),
+    "Voltrack": ("MANECTRIC", "V"),
+    "Arcrail": ("PLUSLE", "W"),
     "Galegull": ("TROPIUS", "T"),
 }
 delta_moves = {
@@ -52,6 +55,9 @@ delta_moves = {
     "Graftwing": [(10, "ACID"), (23, "SLUDGE"), (37, "SLUDGE_BOMB")],
     "Gullit": [(7, "THUNDER_SHOCK"), (16, "SPARK"), (28, "SHOCK_WAVE")],
     "Vaneagle": [(8, "THUNDER_SHOCK"), (18, "SPARK"), (25, "SHOCK_WAVE"), (39, "THUNDERBOLT")],
+    "Tramkit": [(9, "ASTONISH"), (18, "CONFUSE_RAY"), (37, "SHADOW_BALL")],
+    "Voltrack": [(9, "ASTONISH"), (20, "CONFUSE_RAY"), (40, "SHADOW_BALL")],
+    "Arcrail": [(9, "ASTONISH"), (24, "CONFUSE_RAY"), (35, "SHADOW_BALL"), (52, "DESTINY_BOND")],
     "Galegull": [(10, "THUNDER_SHOCK"), (20, "SPARK"), (28, "SHOCK_WAVE"), (37, "THUNDERBOLT")],
 }
 files = {}

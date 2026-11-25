@@ -16,6 +16,11 @@ ReedwakeDelta_EventScript_SeedvaultLab::
 ReedwakeDelta_EventScript_KitewatchLab::
 	lockall
 	msgbox ReedwakeDelta_Text_KitewatchOffer, MSGBOX_YESNO
+	goto ReedwakeDelta_EventScript_Select
+
+ReedwakeDelta_EventScript_CoilmarketLab::
+	lockall
+	msgbox ReedwakeDelta_Text_CoilmarketOffer, MSGBOX_YESNO
 
 ReedwakeDelta_EventScript_Select:
 	goto_if_eq VAR_RESULT, NO, ReedwakeDelta_EventScript_Close
@@ -37,6 +42,9 @@ ReedwakeDelta_EventScript_Select:
 	goto_if_eq VAR_RESULT, 13, ReedwakeDelta_EventScript_GullitTrial
 	goto_if_eq VAR_RESULT, 14, ReedwakeDelta_EventScript_VaneagleTrial
 	goto_if_eq VAR_RESULT, 15, ReedwakeDelta_EventScript_GalegullTrial
+	goto_if_eq VAR_RESULT, 16, ReedwakeDelta_EventScript_TramkitTrial
+	goto_if_eq VAR_RESULT, 17, ReedwakeDelta_EventScript_VoltrackTrial
+	goto_if_eq VAR_RESULT, 18, ReedwakeDelta_EventScript_ArcrailTrial
 	goto_if_ne VAR_RESULT, 1, ReedwakeDelta_EventScript_Unsupported
 	msgbox ReedwakeDelta_Text_Confirm, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, NO, ReedwakeDelta_EventScript_Close
@@ -208,3 +216,34 @@ ReedwakeDelta_Text_GalegullTrial:
 ReedwakeDelta_Text_Unsupported:
 	.string "The lab has no recipe for this\n"
 	.string "POKéMON yet.$"
+
+ReedwakeDelta_EventScript_TramkitTrial:
+	msgbox ReedwakeDelta_Text_TramkitTrial, MSGBOX_DEFAULT
+	goto ReedwakeDelta_EventScript_Close
+
+ReedwakeDelta_EventScript_VoltrackTrial:
+	msgbox ReedwakeDelta_Text_VoltrackTrial, MSGBOX_DEFAULT
+	goto ReedwakeDelta_EventScript_Close
+
+ReedwakeDelta_EventScript_ArcrailTrial:
+	msgbox ReedwakeDelta_Text_ArcrailTrial, MSGBOX_DEFAULT
+	goto ReedwakeDelta_EventScript_Close
+
+ReedwakeDelta_Text_CoilmarketOffer:
+	.string "COILMARKET FIELD STATION\p"
+	.string "Review a partner's Delta trial or\l"
+	.string "start a permanent conversion?$"
+
+ReedwakeDelta_Text_TramkitTrial:
+	.string "Win a wild battle in WIREGRASS WAY\p"
+	.string "after TRAMKIT uses THUNDER WAVE.$"
+
+ReedwakeDelta_Text_VoltrackTrial:
+	.string "At CINDER SPUR, have VOLTRACK use\l"
+	.string "SPARK while holding an ORAN BERRY.\p"
+	.string "Then win the wild battle.$"
+
+ReedwakeDelta_Text_ArcrailTrial:
+	.string "At ASHSWITCH, have ARCRAIL use\l"
+	.string "a STEEL move during a sandstorm.\p"
+	.string "Then win the wild battle.$"

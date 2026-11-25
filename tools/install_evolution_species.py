@@ -39,6 +39,9 @@ slots = {
     "Gullit": "TAILLOW",
     "Vaneagle": "SWELLOW",
     "Galegull": "TROPIUS",
+    "Tramkit": "ELECTRIKE",
+    "Voltrack": "MANECTRIC",
+    "Arcrail": "PLUSLE",
 }
 type_ids = {
     "Normal": "NORMAL", "Fire": "FIRE", "Water": "WATER", "Electric": "ELECTRIC",
@@ -99,6 +102,8 @@ for name, slot in slots.items():
         block = set_field(block, "growthRate", "GROWTH_FLUCTUATING")
     elif entry["family"] == "Galegull":
         block = set_field(block, "growthRate", "GROWTH_MEDIUM_SLOW")
+    elif entry["family"] == "Arcrail":
+        block = set_field(block, "growthRate", "GROWTH_SLOW")
     info = info[:match.start()] + block + info[match.end():]
 
     name_pattern = re.compile(rf'(?m)^(\s*\[SPECIES_{slot}\]\s*=\s*)_\("[^"]*"\)(,)')

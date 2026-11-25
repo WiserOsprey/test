@@ -22,8 +22,11 @@ on:
       - assets/lockmere/**
       - assets/seedvault/**
       - assets/kitewatch/**
+      - assets/coilmarket/**
       - tools/install_kitewatch.py
       - tools/kitewatch_wind.inc
+      - tools/install_coilmarket.py
+      - tools/coilmarket_grid.inc
       - tools/reedwake_district_assets.py
       - tools/install_seedvault.py
       - tools/seedvault_lights.inc
@@ -138,10 +141,14 @@ jobs:
           python3 tools/install_fernut_sprites.py assets/kitewatch/gullit/front.png assets/kitewatch/gullit/back.png source/graphics/pokemon/taillow
           python3 tools/install_fernut_sprites.py assets/kitewatch/vaneagle/front.png assets/kitewatch/vaneagle/back.png source/graphics/pokemon/swellow
           python3 tools/install_fernut_sprites.py assets/kitewatch/galegull/front.png assets/kitewatch/galegull/back.png source/graphics/pokemon/tropius
+          python3 tools/install_fernut_sprites.py assets/coilmarket/tramkit/front.png assets/coilmarket/tramkit/back.png source/graphics/pokemon/electrike
+          python3 tools/install_fernut_sprites.py assets/coilmarket/voltrack/front.png assets/coilmarket/voltrack/back.png source/graphics/pokemon/manectric
+          python3 tools/install_fernut_sprites.py assets/coilmarket/arcrail/front.png assets/coilmarket/arcrail/back.png source/graphics/pokemon/plusle
           python3 tools/install_delta_lab.py data/reedwake/regional_dex.json "$GITHUB_WORKSPACE/source" assets/delta_starters
           python3 tools/install_lockmere.py "$GITHUB_WORKSPACE/source" assets/lockmere
           python3 tools/install_seedvault.py "$GITHUB_WORKSPACE/source" assets/seedvault
           python3 tools/install_kitewatch.py "$GITHUB_WORKSPACE/source" assets/kitewatch
+          python3 tools/install_coilmarket.py "$GITHUB_WORKSPACE/source" assets/coilmarket
 
           python3 tools/install_title_screen.py assets/title/observatory.png "$GITHUB_WORKSPACE/source"
 
@@ -175,7 +182,7 @@ jobs:
           mkdir -p dist
           python3 tools/create_bps.py "Pokemon - Emerald Version (U).gba" source/pokeemerald.gba dist/Reedwake-Scientific-Fantasy.bps
           cat > dist/README.txt <<'EOF'
-          Reedwake: The Resonant Tide — Kitewatch build
+          Reedwake: The Resonant Tide — Coilmarket build
 
           Patch format: BPS
           Required base: unmodified US Pokémon Emerald, revision 0
@@ -194,6 +201,9 @@ jobs:
           just south of the Lockmere Gym. Follow the mirrors in Seedvault to
           challenge Pell for the second badge. Then take the ridge ferry from
           Seedvault to Kitewatch and shift the platforms to challenge Venn.
+          After Venn, talk to the survey tram operator south of the Kitewatch
+          Pokémon Center. Read the live meter in Coilmarket's substation and
+          route power to the tram to reach Brin for the fourth badge.
           Later districts still use Emerald maps.
           EOF
 
