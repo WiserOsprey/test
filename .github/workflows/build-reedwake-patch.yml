@@ -150,9 +150,10 @@ jobs:
             awk -v name="$1" '$3 == name { print $1; found = 1; exit } END { if (!found) exit 1 }' "$RUNNER_TEMP/reedwake-symbols.txt"
           }
           main_addr=$(symbol gMain)
+          intro_addr=$(symbol MainCB2_Intro)
           title_addr=$(symbol CB2_ReedwakeTitle)
           menu_addr=$(symbol CB2_InitMainMenu)
-          "$RUNNER_TEMP/reedwake-smoke" source/pokeemerald.gba "$main_addr" "$title_addr" "$menu_addr"
+          "$RUNNER_TEMP/reedwake-smoke" source/pokeemerald.gba "$main_addr" "$intro_addr" "$title_addr" "$menu_addr"
 
       - name: Create distributable BPS patch
         run: |

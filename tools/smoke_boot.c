@@ -1,5 +1,6 @@
 /* Exercise the built ROM's title renderer and transition with mGBA. */
 #include <mgba/core/core.h>
+#include <mgba/core/log.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -9,6 +10,7 @@
 #define SCREEN_HEIGHT 160
 #define TITLE_WAIT_FRAMES 2400
 #define MENU_WAIT_FRAMES 240
+#define A_KEY 1u
 #define START_KEY (1u << 3)
 
 static color_t sPixels[SCREEN_WIDTH * SCREEN_HEIGHT];
@@ -22,6 +24,35 @@ static bool WaitForCallback(struct mCore *core, uint32_t callbackPtr, uint32_t t
             return true;
     }
     return false;
+}
+
+static bool ReachTitle(struct mCore *core, uint32_t callbackPtr, uint32_t intro, uint32_t title)
+{
+    for (unsigned frame = 0; frame < TITLE_WAIT_FRAMES; frame++)
+    {
+        uint32_t callback = core->busRead32(core, callbackPtr) & ~1u;
+        if (callback == (title & ~1u))
+        {
+            core->setKeys(core, 0);
+            return true;
+        }
+        // The stock attract animation accepts a key after each fade.
+        core->setKeys(core, callback == (intro & ~1u) && frame % 24 == 0 ? A_KEY : 0);
+        core->runFrame(core);
+    }
+    return false;
+}
+
+static void LogEmulatorMessage(struct mLogger *logger, int category, enum mLogLevel level,
+                              const char *format, va_list args)
+{
+    (void)logger;
+    (void)category;
+    if (level == mLOG_ERROR || level == mLOG_FATAL)
+    {
+        vfprintf(stderr, format, args);
+        fputc('\n', stderr);
+    }
 }
 
 static unsigned TitleColorCount(void)
@@ -49,11 +80,13 @@ static unsigned TitleColorCount(void)
 
 int main(int argc, char **argv)
 {
-    if (argc != 5)
+    if (argc != 6)
     {
-        fputs("usage: smoke ROM gMain title_cb menu_cb\n", stderr);
+        fputs("usage: smoke ROM gMain intro_cb title_cb menu_cb\n", stderr);
         return 1;
     }
+    struct mLogger logger = {.log = LogEmulatorMessage};
+    mLogSetDefaultLogger(&logger);
     struct mCore *core = mCoreFind(argv[1]);
     if (!core || !core->init(core))
     {
@@ -73,11 +106,13 @@ int main(int argc, char **argv)
 
     // gMain holds the frame callback immediately after the first callback.
     uint32_t callbackPtr = (uint32_t)strtoul(argv[2], NULL, 16) + 4;
-    uint32_t title = (uint32_t)strtoul(argv[3], NULL, 16);
-    uint32_t menu = (uint32_t)strtoul(argv[4], NULL, 16);
-    if (!WaitForCallback(core, callbackPtr, title, TITLE_WAIT_FRAMES))
+    uint32_t intro = (uint32_t)strtoul(argv[3], NULL, 16);
+    uint32_t title = (uint32_t)strtoul(argv[4], NULL, 16);
+    uint32_t menu = (uint32_t)strtoul(argv[5], NULL, 16);
+    if (!ReachTitle(core, callbackPtr, intro, title))
     {
-        fputs("The game didn't reach Reedwake's title screen\n", stderr);
+        fprintf(stderr, "The game didn't reach Reedwake's title screen (callback %08x, expected %08x)\n",
+                core->busRead32(core, callbackPtr), title);
         goto cleanup;
     }
     for (unsigned i = 0; i < 45; i++)
