@@ -221,6 +221,7 @@ jobs:
           Your badges determine the queue limit. Press A for a normal move.
           The opponent plans the same number of slots. On a reaction prompt,
           A clashes, B guards, and R dodges. Only Clash spends a queued move.
+          Teal battle text marks the queue; reaction messages identify both sides.
           All moves have Speed from 0 (fastest) to 100 (slowest).
           Mandatory repeats, charge turns, and recharge follow standard battle rules.
           When a queue finishes, the other side has at most one more action.

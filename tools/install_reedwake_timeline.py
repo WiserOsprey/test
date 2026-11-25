@@ -11,6 +11,7 @@ bool8 ReedwakeCanQueue(u16 move);
 u8 ReedwakeTimelineTarget(u8 battler, u16 move);
 u8 ReedwakeMoveSpeed(u16 move);
 void ReedwakeCancelQueue(void);
+void ReedwakeSetTextboxTint(bool8 tinted);
 bool8 ReedwakeSetQueue(u8 battler, const u8 *slots, const u8 *positions, u8 count);
 s32 ReedwakeTimelineDamage(s32 damage);
 bool8 ReedwakeGuardRecoil(void);
@@ -49,7 +50,9 @@ edit("src/battle_main.c", [
     (focus, timeline + "\n" + focus),
     ("    gBattleMainFunc = RunTurnActionsFunctions;\n    gBattleCommunication[3] = 0;",
      "    ReedwakeStart();\n    gBattleMainFunc = RunTurnActionsFunctions;\n    gBattleCommunication[3] = 0;"),
-    (run, run + """    if (sTimeline.active && sTimeline.started && gCurrentActionFuncId == B_ACTION_USE_MOVE
+    (run, run + """    if (ReedwakeAnimateReaction())
+        return;
+    if (sTimeline.active && sTimeline.started && gCurrentActionFuncId == B_ACTION_USE_MOVE
         && IsTextPrinterActive(B_WIN_MSG))
         return;
     if (sTimeline.active && !sTimeline.started)
@@ -83,6 +86,8 @@ edit("src/battle_controller_player.c", [
     ("    bool32 canSelectTarget = FALSE;\n    struct ChooseMoveStruct *moveInfo = (struct ChooseMoveStruct *)(&gBattleBufferA[gActiveBattler][4]);\n\n",
      "    bool32 canSelectTarget = FALSE;\n    struct ChooseMoveStruct *moveInfo = (struct ChooseMoveStruct *)(&gBattleBufferA[gActiveBattler][4]);\n\n"
      "    if (ReedwakeMoveInput(moveInfo))\n        return;\n\n"),
+    ("        u8 moveTarget;\n\n        PlaySE(SE_SELECT);",
+     "        u8 moveTarget;\n\n        ReedwakeSetTextboxTint(FALSE);\n        PlaySE(SE_SELECT);"),
     ("static void PlayerHandleChooseMove(void)\n{\n",
      "static void PlayerHandleChooseMove(void)\n{\n    ReedwakeCancelQueue();\n    sReedwakeCount = 0;\n    sReedwakeAim = 0;\n"),
     ("    txtPtr = StringCopy(gDisplayedStringBattle, gText_MoveInterfaceType);",

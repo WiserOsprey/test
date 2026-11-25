@@ -12,6 +12,7 @@ static const u8 sReedwakeAimValue[] = {0, 3, 2};
 static void ReedwakeShowQueue(void)
 {
     u8 *end = StringCopy(gDisplayedStringBattle, sReedwakeQueueText);
+    ReedwakeSetTextboxTint(sReedwakeCount > 0);
     end = ConvertIntToDecimalStringN(end, sReedwakeCount, STR_CONV_MODE_LEFT_ALIGN, 1);
     StringCopy(end, sReedwakeAimText[sReedwakeAim]);
     BattlePutTextOnWindow(gDisplayedStringBattle, B_WIN_MOVE_TYPE);

@@ -7,20 +7,122 @@ struct ReedwakeTimeline
 {
     u8 queue[2][8], aim[8], count[2], next[2], position[2], boost[2], party[2];
     u16 clock[2], now;
+    s16 reactionX, reactionY;
+    u8 animationFrame, animationSprite, animationKind, animationBattler, animationPosition;
     u8 closingAction, staggered;
     u8 requested, active, started, prompt, incoming, percent, guardRecoil, dug[2], fly[2];
 };
 static EWRAM_DATA struct ReedwakeTimeline sTimeline = {0};
+static EWRAM_DATA u8 sReedwakeMessage[128] = {0};
+static EWRAM_DATA bool8 sReedwakeTinted = FALSE;
+static EWRAM_DATA u16 sReedwakeSavedBackground = 0;
+static const u16 sReedwakeTeal = RGB(20, 29, 26);
+static const u8 sTimelineYour[] = _("Your ");
+static const u8 sTimelineFoe[] = _("Foe ");
+static const u8 sTimelineLine[] = _("\n");
+static const u8 sTimelineClash[] = _(" clashed!");
+static const u8 sTimelineGuard[] = _(" guarded!");
+static const u8 sTimelineDodge[] = _(" dodged!");
+static const u8 *const sTimelineReactionText[] = {sTimelineClash, sTimelineGuard, sTimelineDodge};
 static const u8 sTimelinePrompt[] = _(" incoming!\nA: Clash  B: Guard  R/Arrows: Dodge");
-static const u8 sTimelineWeak[] = _("The reaction was too weak!");
+static const u8 sTimelineWeak[] = _(" hits harder!");
+static const u8 sTimelineStopped[] = _(" was blocked!");
 static const u8 sTimelineDig[] = _("Burrowed underground!");
 static const u8 sTimelineFly[] = _("Rose into the air!");
 static const u8 sTimelineBlock[] = _("The attack was blocked!");
-static const u8 sTimelineStrong[] = _("The reaction overpowered the move!");
-static const u8 sTimelineStagger[] = _("Staggered! The remaining queue fell apart!");
+static const u8 sTimelineStrong[] = _(" was overpowered!");
+static const u8 sTimelineStagger[] = _("queue was staggered!");
+
+void ReedwakeSetTextboxTint(bool8 tinted)
+{
+    /* The battle message window uses BG palette 0, color 15 as its paper. */
+    if (tinted == sReedwakeTinted)
+        return;
+    if (tinted)
+        sReedwakeSavedBackground = gPlttBufferUnfaded[15];
+    LoadPalette(tinted ? &sReedwakeTeal : &sReedwakeSavedBackground, 15, sizeof(u16));
+    sReedwakeTinted = tinted;
+}
+
+static void ReedwakeStartReactionAnimation(u8 battler, u8 kind)
+{
+    u8 spriteId = gBattlerSpriteIds[battler];
+    if (spriteId >= MAX_SPRITES || !gSprites[spriteId].inUse)
+        return;
+    sTimeline.animationSprite = spriteId;
+    sTimeline.animationKind = kind;
+    sTimeline.animationBattler = battler;
+    sTimeline.animationPosition = sTimeline.position[battler];
+    sTimeline.reactionX = gSprites[spriteId].x2;
+    sTimeline.reactionY = gSprites[spriteId].y2;
+    sTimeline.animationFrame = 1;
+}
+
+static bool8 ReedwakeAnimateReaction(void)
+{
+    struct Sprite *sprite;
+    s16 distance, direction, x = 0, y = 0;
+    u8 frame = sTimeline.animationFrame;
+    if (!frame)
+        return FALSE;
+    sprite = &gSprites[sTimeline.animationSprite];
+    if (!sprite->inUse)
+    {
+        sTimeline.animationFrame = 0;
+        return FALSE;
+    }
+    if (frame == 17)
+    {
+        sprite->x2 = sTimeline.reactionX;
+        sprite->y2 = sTimeline.reactionY;
+        sTimeline.animationFrame = 0;
+        return FALSE;
+    }
+    distance = frame <= 8 ? frame : 17 - frame;
+    direction = sTimeline.animationBattler == 0 ? 1 : -1;
+    if (sTimeline.animationKind == RW_ATTACK)
+    {
+        x = distance * 2 * direction;
+        y = -(distance / 2);
+    }
+    else if (sTimeline.animationKind == RW_DEFEND)
+    {
+        x = (frame % 4 < 2 ? 1 : -1) * direction;
+        y = distance / 2;
+    }
+    else
+    {
+        x = -distance * 2 * direction;
+        y = sTimeline.animationPosition == RW_UNDER ? distance : -distance;
+    }
+    sprite->x2 = sTimeline.reactionX + x;
+    sprite->y2 = sTimeline.reactionY + y;
+    sTimeline.animationFrame++;
+    return TRUE;
+}
+
+static const u8 *ReedwakeSideText(u8 battler)
+{
+    return battler == 0 ? sTimelineYour : sTimelineFoe;
+}
+
+static void ReedwakePrintReaction(u8 incoming, u8 reaction, u16 move, const u8 *outcome, u8 staggered)
+{
+    u8 defender = incoming ^ 1;
+    u8 *text = StringCopy(sReedwakeMessage, ReedwakeSideText(defender));
+    text = StringCopy_Nickname(text, gBattleMons[defender].nickname);
+    text = StringCopy(text, sTimelineReactionText[reaction]);
+    text = StringCopy(text, sTimelineLine);
+    if (staggered < 2)
+        StringCopy(StringCopy(text, ReedwakeSideText(staggered)), sTimelineStagger);
+    else
+        StringCopy(StringCopy(StringCopy(text, ReedwakeSideText(incoming)), gMoveNames[move]), outcome);
+    BattlePutTextOnWindow(sReedwakeMessage, B_WIN_MSG);
+}
 
 static void ReedwakeReset(void)
 {
+    ReedwakeSetTextboxTint(FALSE);
     memset(&sTimeline, 0, sizeof(sTimeline));
 }
 
@@ -207,6 +309,7 @@ static void ReedwakeStart(void)
         sTimeline.party[i] = gBattlerPartyIndexes[i];
     }
     sTimeline.active = TRUE;
+    ReedwakeSetTextboxTint(TRUE);
     gBattle_BG0_X = 0;
     gBattle_BG0_Y = 0;
     sTimeline.count[0] = count;
@@ -356,6 +459,7 @@ static void ReedwakeReact(u8 incoming, u8 reaction, u8 position)
         pressure = gBattleMons[incoming].attack;
     }
     score = strength * 100 / max(pressure, 1);
+    ReedwakeStartReactionAnimation(defender, reaction);
     if (score < 85)
     {
         if (clash)
@@ -364,10 +468,10 @@ static void ReedwakeReact(u8 incoming, u8 reaction, u8 position)
         {
             sTimeline.next[defender] = sTimeline.count[defender];
             sTimeline.staggered |= 1 << defender;
-            BattlePutTextOnWindow(sTimelineStagger, B_WIN_MSG);
+            ReedwakePrintReaction(incoming, reaction, move, sTimelineWeak, defender);
         }
         else
-            BattlePutTextOnWindow(sTimelineWeak, B_WIN_MSG);
+            ReedwakePrintReaction(incoming, reaction, move, sTimelineWeak, 2);
         ReedwakeAction(incoming, 125);
     }
     else if (score < 125)
@@ -375,12 +479,12 @@ static void ReedwakeReact(u8 incoming, u8 reaction, u8 position)
         ReedwakeDrop(incoming);
         if (clash)
             ReedwakeDrop(defender);
-        BattlePutTextOnWindow(sTimelineBlock, B_WIN_MSG);
+        ReedwakePrintReaction(incoming, reaction, move, sTimelineStopped, 2);
     }
     else
     {
         bool8 stagger = Random() % 64 == 0;
-        BattlePutTextOnWindow(stagger ? sTimelineStagger : sTimelineStrong, B_WIN_MSG);
+        ReedwakePrintReaction(incoming, reaction, move, sTimelineStrong, stagger ? incoming : 2);
         if (reaction == RW_ATTACK)
         {
             ReedwakeDrop(incoming);
@@ -481,8 +585,8 @@ static bool8 ReedwakeAdvance(void)
     {
         sTimeline.incoming = actor;
         sTimeline.prompt = TRUE;
-        StringCopy(StringCopy(gDisplayedStringBattle, gMoveNames[move]), sTimelinePrompt);
-        BattlePutTextOnWindow(gDisplayedStringBattle, B_WIN_MSG);
+        StringCopy(StringCopy(StringCopy(sReedwakeMessage, sTimelineFoe), gMoveNames[move]), sTimelinePrompt);
+        BattlePutTextOnWindow(sReedwakeMessage, B_WIN_MSG);
     }
     else
         ReedwakeAction(actor, 100);

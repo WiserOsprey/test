@@ -8,10 +8,13 @@ typedef uint8_t u8, bool8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 typedef int32_t s32;
+typedef int16_t s16;
 
 #define EWRAM_DATA
 #define _(text) text
 #define TRUE 1
+#define RGB(r, g, b) ((r) | ((g) << 5) | ((b) << 10))
+#define MAX_SPRITES 64
 #define FALSE 0
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #define JOY_NEW(mask) (keys & (mask))
@@ -29,27 +32,41 @@ static u8 keys, badges = 3, gBattlersCount = 2, gChosenActionByBattler[2];
 static u32 gBattleTypeFlags, gBattleControllerExecFlags;
 static u8 gBattlerPartyIndexes[2], gBattlerByTurnOrder[2], gActionsByTurnOrder[2];
 static u8 gCurrentTurnActionNumber, gCurrentActionFuncId, gBattlerAttacker, gBattlerTarget;
-static u8 gBattleOutcome, gMoveResultFlags, gDisplayedStringBattle[128];
+static u8 gBattleOutcome, gMoveResultFlags, lastMessage[128];
 static u16 gBattle_BG0_X, gBattle_BG0_Y, gCurrentMove, gChosenMoveByBattler[2];
 static const u8 gStatStageRatios[][2] = {{1, 1}};
-static const u8 gMoveNames[MOVES_COUNT][16] = {[MOVE_EARTHQUAKE] = "Earthquake", [MOVE_POUND] = "Pound"};
+static const u8 gMoveNames[MOVES_COUNT][16] = {[MOVE_EARTHQUAKE] = "Earthquake", [MOVE_POUND] = "Pound", [MOVE_TACKLE] = "Tackle"};
 static struct { int8_t priority; u8 power, accuracy, target, effect; } gBattleMoves[MOVES_COUNT];
-static struct { u16 speed, attack, defense, hp, moves[4]; u8 pp[4], statStages[1], types[2];
+static struct { u16 speed, attack, defense, hp, moves[4]; u8 pp[4], statStages[1], types[2], nickname[11];
                 u32 status1, status2; } gBattleMons[2];
 static struct { u16 encoredMove; } gDisableStructs[2];
 static struct { u8 noValidMoves; } gProtectStructs[2];
 static struct { u8 chosenMovePositions[2], moveTarget[2]; } battleStruct, *gBattleStruct = &battleStruct;
+struct Sprite { bool8 inUse; s16 x2, y2; };
+static struct Sprite gSprites[MAX_SPRITES];
+static u8 gBattlerSpriteIds[2] = {0,1};
+static u16 gPlttBufferUnfaded[16];
+static void LoadPalette(const void *src, u16 start, u16 size)
+{
+    memcpy(&gPlttBufferUnfaded[start], src, size);
+}
 static u16 roll = 1;
 static u16 Random(void) { return roll; }
 static bool8 FlagGet(u16 flag) { return flag < badges; }
 static bool8 IsTextPrinterActive(u8 window) { return FALSE; }
-static void BattlePutTextOnWindow(const u8 *message, u8 window) { assert(message[0]); }
+static void BattlePutTextOnWindow(const u8 *message, u8 window)
+{
+    assert(message[0]);
+    strcpy((char *)lastMessage, (const char *)message);
+}
 static u8 *StringCopy(u8 *dest, const u8 *source)
 {
     size_t length = strlen((const char *)source);
     memcpy(dest, source, length + 1);
     return dest + length;
 }
+
+static u8 *StringCopy_Nickname(u8 *dest, const u8 *source) { return StringCopy(dest, source); }
 
 #include "reedwake_timeline.inc"
 
@@ -263,6 +280,28 @@ int main(void)
     gBattleMoves[MOVE_COUNTER].priority = -5;
     assert(ReedwakeMoveSpeed(MOVE_SOLAR_BEAM) == 100);
     assert(ReedwakeMoveSpeed(MOVE_COUNTER) == 100);
+    Setup(MOVE_TACKLE, MOVE_POUND);
+    strcpy((char *)gBattleMons[0].nickname, "Aipom");
+    strcpy((char *)gBattleMons[1].nickname, "Sentret");
+    gPlttBufferUnfaded[15] = 0x7FFF;
+    assert(ReedwakeSetQueue(0, slots, aim, 2));
+    ReedwakeStart();
+    assert(gPlttBufferUnfaded[15] == sReedwakeTeal);
+    gSprites[1].inUse = TRUE;
+    gSprites[1].x2 = 3;
+    gSprites[1].y2 = -2;
+    ReedwakeReact(0, RW_DEFEND, RW_FRONT);
+    assert(strstr((const char *)lastMessage, "Foe Sentret guarded!"));
+    assert(strstr((const char *)lastMessage, "\nYour Tackle was blocked!"));
+    assert(ReedwakeAnimateReaction() && gSprites[1].x2 != 3);
+    for (i = 1; i < 16; i++)
+        assert(ReedwakeAnimateReaction());
+    assert(!ReedwakeAnimateReaction() && gSprites[1].x2 == 3 && gSprites[1].y2 == -2);
+    ReedwakeReact(1, RW_DODGE, RW_BEHIND);
+    assert(strstr((const char *)lastMessage, "Your Aipom dodged!"));
+    assert(strstr((const char *)lastMessage, "\nFoe Pound"));
+    ReedwakeReset();
+    assert(gPlttBufferUnfaded[15] == 0x7FFF);
     puts("Reedwake timeline checks passed.");
     return 0;
 }
