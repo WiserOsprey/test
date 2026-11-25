@@ -7,6 +7,7 @@ on:
     paths:
       - .github/workflows/build-reedwake-patch.yml
       - tools/create_bps.py
+      - tools/smoke_boot.c
       - tools/install_science_palette.py
       - tools/install_evolution_species.py
       - tools/install_delta_lab.py
@@ -80,7 +81,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential gcc-arm-none-eabi binutils-arm-none-eabi libpng-dev python3-pil
+          sudo apt-get install -y build-essential gcc-arm-none-eabi binutils-arm-none-eabi libpng-dev libmgba-dev python3-pil
 
       - name: Build agbcc
         working-directory: source/agbcc
@@ -138,6 +139,20 @@ jobs:
           MODERN: 0
           COMPARE: 0
         run: make -j2 all
+
+
+      - name: Boot the ROM in mGBA
+        run: |
+          cc -std=gnu11 -O2 tools/smoke_boot.c -o "$RUNNER_TEMP/reedwake-smoke" -lmgba
+          elf=source/pokeemerald.elf
+          arm-none-eabi-nm "$elf" > "$RUNNER_TEMP/reedwake-symbols.txt"
+          symbol() {
+            awk -v name="$1" '$3 == name { print $1; found = 1; exit } END { if (!found) exit 1 }' "$RUNNER_TEMP/reedwake-symbols.txt"
+          }
+          main_addr=$(symbol gMain)
+          title_addr=$(symbol CB2_ReedwakeTitle)
+          menu_addr=$(symbol CB2_InitMainMenu)
+          "$RUNNER_TEMP/reedwake-smoke" source/pokeemerald.gba "$main_addr" "$title_addr" "$menu_addr"
 
       - name: Create distributable BPS patch
         run: |
