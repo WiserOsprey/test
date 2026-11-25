@@ -9,7 +9,9 @@ on:
       - tools/create_bps.py
       - tools/install_science_palette.py
       - tools/install_rillfin_sprites.py
+      - tools/install_fernut_sprites.py
       - assets/rillfin/**
+      - assets/fernut/**
       - assets/rillfin/**
       - Pokemon - Emerald Version (U).gba
   workflow_dispatch:
@@ -75,6 +77,7 @@ jobs:
           python3 hack/tools/install_science_palette.py "$GITHUB_WORKSPACE/source" "$GITHUB_WORKSPACE/hack/purple-pokedex-gba/science-fantasy/bg_science_fantasy.pal"
           python3 tools/install_rillfin_sprites.py assets/rillfin/front.png assets/rillfin/back_concept.png assets/rillfin/normal.pal source/graphics/pokemon/mudkip
           cp assets/rillfin/normal.pal source/graphics/pokemon/mudkip/normal.pal
+          python3 tools/install_fernut_sprites.py assets/fernut/front_concept.png assets/fernut/back_concept.png source/graphics/pokemon/treecko
 
       - name: Build the ROM
         working-directory: source
