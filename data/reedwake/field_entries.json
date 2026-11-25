@@ -522,5 +522,152 @@
         "SIGNAL_BEAM"
       ]
     ]
+  },
+  "Siltmole": {
+    "category": "SILT DIGGER",
+    "heightDm": 4,
+    "weightHg": 78,
+    "text": [
+      "Siltmole can tell when a floodgate",
+      "has moved by feeling its vibrations.",
+      "It digs a ring of little escape holes",
+      "before settling in a new bank."
+    ],
+    "levelUp": [
+      [
+        1,
+        "SCRATCH"
+      ],
+      [
+        1,
+        "SAND_ATTACK"
+      ],
+      [
+        4,
+        "MUD_SLAP"
+      ],
+      [
+        8,
+        "DEFENSE_CURL"
+      ],
+      [
+        11,
+        "MUD_SPORT"
+      ],
+      [
+        15,
+        "MUD_SHOT"
+      ],
+      [
+        20,
+        "DIG"
+      ],
+      [
+        29,
+        "SLASH"
+      ],
+      [
+        40,
+        "EARTHQUAKE"
+      ]
+    ]
+  },
+  "Gategrub": {
+    "category": "GATE WEDGE",
+    "heightDm": 8,
+    "weightHg": 344,
+    "text": [
+      "Its stone brow fits tight against a",
+      "tunnel wall. When a channel clogs,",
+      "Gategrub wedges its head beneath",
+      "the blockage and pushes it free."
+    ],
+    "levelUp": [
+      [
+        1,
+        "SCRATCH"
+      ],
+      [
+        1,
+        "SAND_ATTACK"
+      ],
+      [
+        4,
+        "MUD_SLAP"
+      ],
+      [
+        8,
+        "DEFENSE_CURL"
+      ],
+      [
+        12,
+        "ROCK_THROW"
+      ],
+      [
+        16,
+        "MUD_SHOT"
+      ],
+      [
+        21,
+        "DIG"
+      ],
+      [
+        29,
+        "ROCK_SLIDE"
+      ],
+      [
+        40,
+        "EARTHQUAKE"
+      ]
+    ]
+  },
+  "Lockmole": {
+    "category": "LOCK BORER",
+    "heightDm": 13,
+    "weightHg": 955,
+    "text": [
+      "Lockmole shunts floodwater through",
+      "channels carved with its steel plates.",
+      "An old lock sometimes takes its name",
+      "from the Lockmole that dug its bypass."
+    ],
+    "levelUp": [
+      [
+        1,
+        "SCRATCH"
+      ],
+      [
+        1,
+        "SAND_ATTACK"
+      ],
+      [
+        4,
+        "MUD_SLAP"
+      ],
+      [
+        8,
+        "HARDEN"
+      ],
+      [
+        12,
+        "MUD_SHOT"
+      ],
+      [
+        14,
+        "METAL_CLAW"
+      ],
+      [
+        21,
+        "DIG"
+      ],
+      [
+        29,
+        "IRON_TAIL"
+      ],
+      [
+        40,
+        "EARTHQUAKE"
+      ]
+    ]
   }
 }

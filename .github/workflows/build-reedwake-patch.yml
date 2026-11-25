@@ -18,6 +18,9 @@ on:
       - tools/install_title_screen.py
       - tools/reedwake_title.c
       - assets/title/**
+      - assets/lockmere/**
+      - tools/install_lockmere.py
+      - tools/lockmere_gates.inc
       - assets/rillfin/**
       - assets/fernut/**
       - assets/cindrix/**
@@ -118,7 +121,11 @@ jobs:
           python3 tools/install_fernut_sprites.py assets/fenstilt/front.png assets/fenstilt/back.png source/graphics/pokemon/skarmory
           python3 tools/install_fernut_sprites.py assets/silkettle/front.png assets/silkettle/back.png source/graphics/pokemon/silcoon
           python3 tools/install_fernut_sprites.py assets/latchwing/front.png assets/latchwing/back.png source/graphics/pokemon/beautifly
+          python3 tools/install_fernut_sprites.py assets/lockmere/siltmole/front.png assets/lockmere/siltmole/back.png source/graphics/pokemon/geodude
+          python3 tools/install_fernut_sprites.py assets/lockmere/gategrub/front.png assets/lockmere/gategrub/back.png source/graphics/pokemon/graveler
+          python3 tools/install_fernut_sprites.py assets/lockmere/lockmole/front.png assets/lockmere/lockmole/back.png source/graphics/pokemon/golem
           python3 tools/install_delta_lab.py data/reedwake/regional_dex.json "$GITHUB_WORKSPACE/source" assets/delta_starters
+          python3 tools/install_lockmere.py "$GITHUB_WORKSPACE/source" assets/lockmere
 
           python3 tools/install_title_screen.py assets/title/observatory.png "$GITHUB_WORKSPACE/source"
 
@@ -137,7 +144,7 @@ jobs:
           mkdir -p dist
           python3 tools/create_bps.py "Pokemon - Emerald Version (U).gba" source/pokeemerald.gba dist/Reedwake-Scientific-Fantasy.bps
           cat > dist/README.txt <<'EOF'
-          Reedwake: The Resonant Tide — opening prototype
+          Reedwake: The Resonant Tide — Lockmere build
 
           Patch format: BPS
           Required base: unmodified US Pokémon Emerald, revision 0
@@ -150,8 +157,9 @@ jobs:
           first battle at Tide Reach, then return to the lab and get the Pokédex.
           Use the machine by the lab wall to read your party's Delta trial hints.
  
-          This prototype covers the three starter lines and the first wild
-          families. It uses the Emerald campaign beyond the opening survey.
+          Head west through Reedbank Path, then north through the woods to
+          Lockmere. Open the intake and use the gauge to drain the upper lock.
+          Defeat Tamsin for the first badge. Later districts use Emerald maps.
           EOF
 
       - name: Upload BPS patch only

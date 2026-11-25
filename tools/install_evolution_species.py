@@ -30,6 +30,9 @@ slots = {
     "Podtick": "WURMPLE",
     "Silkettle": "SILCOON",
     "Latchwing": "BEAUTIFLY",
+    "Siltmole": "GEODUDE",
+    "Gategrub": "GRAVELER",
+    "Lockmole": "GOLEM",
 }
 type_ids = {
     "Normal": "NORMAL", "Fire": "FIRE", "Water": "WATER", "Electric": "ELECTRIC",
