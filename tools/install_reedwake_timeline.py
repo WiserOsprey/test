@@ -8,7 +8,7 @@ TOOLS = Path(__file__).parent
 HEADER = """
 u8 ReedwakeQueueLimit(void);
 bool8 ReedwakeCanQueue(u16 move);
-u8 ReedwakeMoveTicks(u16 move);
+u8 ReedwakeMoveSpeed(u16 move);
 void ReedwakeCancelQueue(void);
 bool8 ReedwakeSetQueue(u8 battler, const u8 *slots, const u8 *positions, u8 count);
 s32 ReedwakeTimelineDamage(s32 damage);
@@ -137,13 +137,6 @@ static void Cmd_moveend(void)
 edit("src/pokemon_summary_screen.c", [
     (header, with_header),
     ("static const u8 sTextColors[][3] =", '''static const u8 sReedwakeMoveSpeed[] = _("Speed");
-static const u8 sReedwakeTicksUnavailable[] = _("N/A");
-static const u8 sReedwakeOneTick[] = _("1 tick");
-static const u8 sReedwakeTwoTicks[] = _("2 ticks");
-static const u8 sReedwakeThreeTicks[] = _("3 ticks");
-static const u8 *const sReedwakeTickText[] = {
-    sReedwakeTicksUnavailable, sReedwakeOneTick, sReedwakeTwoTicks, sReedwakeThreeTicks
-};
 static const u8 sTextColors[][3] ='''),
     ("    PrintTextOnWindow(PSS_LABEL_WINDOW_MOVES_POWER_ACC, gText_Power, 0, 1, 0, 1);\n"
      "    PrintTextOnWindow(PSS_LABEL_WINDOW_MOVES_POWER_ACC, gText_Accuracy2, 0, 17, 0, 1);",
@@ -156,7 +149,13 @@ static const u8 sTextColors[][3] ='''),
      "        AddTextPrinterParameterized4(PSS_LABEL_WINDOW_MOVES_POWER_ACC, FONT_SMALL, GetStringRightAlignXOffset(FONT_SMALL, text, 71), 0, 0, 0, sTextColors[0], 0, text);"),
     ("        PrintTextOnWindow(PSS_LABEL_WINDOW_MOVES_POWER_ACC, text, 53, 17, 0, 0);",
      '''        AddTextPrinterParameterized4(PSS_LABEL_WINDOW_MOVES_POWER_ACC, FONT_SMALL, GetStringRightAlignXOffset(FONT_SMALL, text, 71), 10, 0, 0, sTextColors[0], 0, text);
-        text = sReedwakeTickText[ReedwakeMoveTicks(moveIndex)];
+        if (ReedwakeMoveSpeed(moveIndex) > 100)
+            text = gText_ThreeDashes;
+        else
+        {
+            ConvertIntToDecimalStringN(gStringVar1, ReedwakeMoveSpeed(moveIndex), STR_CONV_MODE_RIGHT_ALIGN, 3);
+            text = gStringVar1;
+        }
         AddTextPrinterParameterized4(PSS_LABEL_WINDOW_MOVES_POWER_ACC, FONT_SMALL,
             GetStringRightAlignXOffset(FONT_SMALL, text, 71), 20, 0, 0, sTextColors[0], 0, text);'''),
 ])

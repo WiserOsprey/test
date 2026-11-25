@@ -181,10 +181,59 @@ int main(void)
     assert(ReedwakeAdvance() && !sTimeline.prompt && sTimeline.started);
     assert(ReedwakeTimelineDamage(100) == 100);
     gBattleMoves[MOVE_SURF].power = 95;
-    assert(ReedwakeMoveTicks(MOVE_TACKLE) == 1);
-    assert(ReedwakeMoveTicks(MOVE_METAL_CLAW) == 2);
-    assert(ReedwakeMoveTicks(MOVE_SURF) == 3);
-    assert(ReedwakeMoveTicks(MOVE_NONE) == 0);
+    gBattleMoves[MOVE_QUICK_ATTACK].priority = 1;
+    assert(ReedwakeMoveSpeed(MOVE_QUICK_ATTACK) == 0);
+    assert(ReedwakeMoveSpeed(MOVE_TACKLE) == 25);
+    assert(ReedwakeMoveSpeed(MOVE_POUND) == 25);
+    assert(ReedwakeMoveSpeed(MOVE_METAL_CLAW) == 50);
+    assert(ReedwakeMoveSpeed(MOVE_SURF) == 100);
+    assert(ReedwakeMoveSpeed(MOVE_NONE) > 100);
+
+    /* Three fast player actions fit before the heavy move. Its response is final. */
+    Setup(MOVE_TACKLE, MOVE_SURF);
+    gBattleMoves[MOVE_SURF].power = 95;
+    assert(ReedwakeSetQueue(0, slots, aim, 3));
+    ReedwakeStart();
+    for (i = 1; i <= 3; i++)
+    {
+        assert(ReedwakeAdvance() && gBattlerByTurnOrder[0] == 0);
+        assert(sTimeline.next[0] == i && sTimeline.now == 25 * i);
+        sTimeline.started = FALSE;
+    }
+    assert(ReedwakeAdvance() && sTimeline.prompt && sTimeline.now == 100);
+    keys = B_BUTTON;
+    assert(ReedwakeAdvance() && sTimeline.next[1] == 1);
+    assert(!ReedwakeAdvance());
+
+    /* The same cap applies to the player when the opponent finishes first. */
+    Setup(MOVE_SURF, MOVE_POUND);
+    gBattleMoves[MOVE_SURF].power = 95;
+    gBattleMons[0].speed = 50;
+    gBattleMons[1].speed = 100;
+    assert(ReedwakeSetQueue(0, slots, aim, 3));
+    ReedwakeStart();
+    for (i = 1; i <= 3; i++)
+    {
+        assert(ReedwakeAdvance() && gBattlerByTurnOrder[0] == 1);
+        assert(sTimeline.next[1] == i && sTimeline.now == 25 * i);
+        sTimeline.started = FALSE;
+    }
+    assert(ReedwakeAdvance() && gBattlerByTurnOrder[0] == 0);
+    assert(sTimeline.next[0] == 1 && sTimeline.now == 100);
+    sTimeline.started = FALSE;
+    assert(!ReedwakeAdvance());
+
+    /* Zero-delay moves and the full 0–800 clock fit the scheduler. */
+    Setup(MOVE_QUICK_ATTACK, MOVE_SURF);
+    gBattleMoves[MOVE_SURF].power = 95;
+    assert(ReedwakeSetQueue(0, slots, aim, 2));
+    ReedwakeStart();
+    sTimeline.clock[0] = sTimeline.clock[1] = 400;
+    assert(ReedwakeAdvance() && gBattlerByTurnOrder[0] == 0 && sTimeline.now == 400);
+    sTimeline.started = FALSE;
+    assert(ReedwakeAdvance() && gBattlerByTurnOrder[0] == 0 && sTimeline.now == 400);
+    sTimeline.started = FALSE;
+    assert(ReedwakeAdvance() && sTimeline.prompt && sTimeline.now == 500);
     puts("Reedwake timeline checks passed.");
     return 0;
 }

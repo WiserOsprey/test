@@ -1,10 +1,13 @@
 /* Optional single-battle timeline. Normal turns never call the scheduler. */
 enum { RW_FRONT, RW_UNDER, RW_AIR, RW_BEHIND };
 enum { RW_ATTACK, RW_DEFEND, RW_DODGE };
+enum { RW_FAST_LIMIT = 25, RW_SPEED_UNAVAILABLE = 0xFF };
 
 struct ReedwakeTimeline
 {
-    u8 queue[2][8], aim[8], count[2], next[2], clock[2], position[2], boost[2], party[2];
+    u8 queue[2][8], aim[8], count[2], next[2], position[2], boost[2], party[2];
+    u16 clock[2], now;
+    u8 closingAction, staggered;
     u8 requested, active, started, prompt, incoming, percent, guardRecoil, dug[2], fly[2];
 };
 static EWRAM_DATA struct ReedwakeTimeline sTimeline = {0};
@@ -39,11 +42,18 @@ static bool8 ReedwakeCharge(u16 move)
     return move == MOVE_DIG || move == MOVE_FLY;
 }
 
-static u8 ReedwakeTicks(u16 move)
+static u8 ReedwakeDelay(u16 move)
 {
-    if (move == MOVE_TACKLE || move == MOVE_POUND || gBattleMoves[move].priority > 0)
-        return 1;
-    return gBattleMoves[move].power >= 85 ? 3 : 2;
+    u8 power = gBattleMoves[move].power;
+    if (gBattleMoves[move].priority > 0)
+        return 0;
+    if (move == MOVE_TACKLE || move == MOVE_POUND)
+        return RW_FAST_LIMIT;
+    if (power >= 95)
+        return 100;
+    if (power >= 85)
+        return 75;
+    return 50;
 }
 
 bool8 ReedwakeCanQueue(u16 move)
@@ -63,9 +73,9 @@ bool8 ReedwakeCanQueue(u16 move)
     }
 }
 
-u8 ReedwakeMoveTicks(u16 move)
+u8 ReedwakeMoveSpeed(u16 move)
 {
-    return ReedwakeCanQueue(move) ? ReedwakeTicks(move) : 0;
+    return ReedwakeCanQueue(move) ? ReedwakeDelay(move) : RW_SPEED_UNAVAILABLE;
 }
 
 void ReedwakeCancelQueue(void)
@@ -204,6 +214,11 @@ static bool8 ReedwakeReady(u8 battler)
     return FALSE;
 }
 
+static u16 ReedwakeDue(u8 battler)
+{
+    return max(sTimeline.now, sTimeline.clock[battler] + ReedwakeDelay(ReedwakeMove(battler)));
+}
+
 static void ReedwakeApplyPosition(u8 battler, u16 move, u8 aim)
 {
     if (aim == RW_FRONT || aim == RW_BEHIND)
@@ -218,7 +233,7 @@ static void ReedwakeAction(u8 battler, u8 multiplier)
     u8 slot = sTimeline.queue[battler][index];
     u16 move = gBattleMons[battler].moves[slot];
     u8 other = battler ^ 1;
-    sTimeline.clock[battler] += ReedwakeTicks(move);
+    sTimeline.clock[battler] = sTimeline.now;
     if (ReedwakeCharge(move) && !sTimeline.dug[battler] && !sTimeline.fly[battler])
     {
         sTimeline.position[battler] = move == MOVE_DIG ? RW_UNDER : RW_AIR;
@@ -229,7 +244,7 @@ static void ReedwakeAction(u8 battler, u8 multiplier)
     }
     if (battler == 0 && !sTimeline.dug[battler] && !sTimeline.fly[battler])
         ReedwakeApplyPosition(battler, move, sTimeline.aim[index]);
-    if (sTimeline.position[battler] == RW_BEHIND && ReedwakeTicks(move) == 1)
+    if (sTimeline.position[battler] == RW_BEHIND && ReedwakeDelay(move) <= RW_FAST_LIMIT)
         multiplier = multiplier * 5 / 4;
     if (sTimeline.boost[battler])
     {
@@ -286,7 +301,7 @@ void ReedwakePositionHit(void)
 
 static void ReedwakeDrop(u8 battler)
 {
-    sTimeline.clock[battler] += ReedwakeTicks(ReedwakeMove(battler));
+    sTimeline.clock[battler] = sTimeline.now;
     sTimeline.next[battler]++;
 }
 
@@ -323,6 +338,7 @@ static void ReedwakeReact(u8 incoming, u8 reaction, u8 position)
         if (Random() % 64 == 0)
         {
             sTimeline.next[defender] = sTimeline.count[defender];
+            sTimeline.staggered |= 1 << defender;
             BattlePutTextOnWindow(sTimelineStagger, B_WIN_MSG);
         }
         else
@@ -356,7 +372,10 @@ static void ReedwakeReact(u8 incoming, u8 reaction, u8 position)
             sTimeline.boost[defender] = TRUE;
         }
         if (stagger)
+        {
             sTimeline.next[incoming] = sTimeline.count[incoming];
+            sTimeline.staggered |= 1 << incoming;
+        }
     }
 }
 
@@ -390,14 +409,22 @@ static bool8 ReedwakeAdvance(void)
     }
     ready0 = ReedwakeReady(0);
     ready1 = ReedwakeReady(1);
-    if (!ready0 && !ready1)
+    if (sTimeline.closingAction || (!ready0 && !ready1))
         return FALSE;
-    actor = ready1;
-    if (ready0 && (!ready1
-        || sTimeline.clock[0] + ReedwakeTicks(ReedwakeMove(0)) < sTimeline.clock[1] + ReedwakeTicks(ReedwakeMove(1))
-        || (sTimeline.clock[0] + ReedwakeTicks(ReedwakeMove(0)) == sTimeline.clock[1] + ReedwakeTicks(ReedwakeMove(1))
-          && ReedwakeSpeed(0) >= ReedwakeSpeed(1))))
-        actor = 0;
+    if (ready0 && ready1)
+    {
+        u16 playerDue = ReedwakeDue(0);
+        u16 opponentDue = ReedwakeDue(1);
+        actor = opponentDue < playerDue
+             || (opponentDue == playerDue && ReedwakeSpeed(1) > ReedwakeSpeed(0));
+    }
+    else
+    {
+        actor = ready1;
+        if (!(sTimeline.staggered & (1 << (actor ^ 1))))
+            sTimeline.closingAction = TRUE;
+    }
+    sTimeline.now = ReedwakeDue(actor);
     move = ReedwakeMove(actor);
     if ((move == MOVE_EARTHQUAKE || move == MOVE_MAGNITUDE) && sTimeline.position[actor ^ 1] == RW_AIR)
     {
