@@ -31,6 +31,7 @@ on:
       - tools/install_reedwake_timeline.py
       - tools/reedwake_timeline.inc
       - tools/reedwake_timeline_menu.inc
+      - tools/test_reedwake_timeline.c
       - tools/reedwake_district_assets.py
       - tools/install_seedvault.py
       - tools/seedvault_lights.inc
@@ -168,6 +169,11 @@ jobs:
           COMPARE: 0
         run: make -j2 all
 
+
+      - name: Check the battle timeline scheduler
+        run: |
+          cc -std=c99 -O2 tools/test_reedwake_timeline.c -o "$RUNNER_TEMP/reedwake-timeline-test"
+          "$RUNNER_TEMP/reedwake-timeline-test"
 
       - name: Boot the ROM in mGBA
         run: |

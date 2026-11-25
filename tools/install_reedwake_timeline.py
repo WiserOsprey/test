@@ -10,6 +10,7 @@ u8 ReedwakeQueueLimit(void);
 bool8 ReedwakeCanQueue(u16 move);
 bool8 ReedwakeSetQueue(u8 battler, const u8 *slots, const u8 *positions, u8 count);
 s32 ReedwakeTimelineDamage(s32 damage);
+bool8 ReedwakeGuardRecoil(void);
 bool8 ReedwakeReleaseCharge(void);
 void ReedwakePositionHit(void);
 """
@@ -96,6 +97,36 @@ edit("src/battle_util.c", [
 ])
 edit("src/battle_script_commands.c", [
     (header, with_header),
+    ("static void Cmd_moveend(void)\n{\n", """static EWRAM_DATA s32 sReedwakeRecoilDamage = 0;
+static EWRAM_DATA s32 sReedwakeRecoilHpDealt = 0;
+static EWRAM_DATA bool8 sReedwakeRecoilReturning = FALSE;
+
+static void Cmd_moveend(void)
+{
+"""),
+    ("    u16 originallyUsedMove;\n\n    if (gChosenMove == MOVE_UNAVAILABLE)",
+     """    u16 originallyUsedMove;
+
+    if (sReedwakeRecoilReturning)
+    {
+        sReedwakeRecoilReturning = FALSE;
+        gBattleMoveDamage = sReedwakeRecoilDamage;
+        gHpDealt = sReedwakeRecoilHpDealt;
+        gHitMarker &= ~HITMARKER_PASSIVE_HP_UPDATE;
+    }
+    else if (ReedwakeGuardRecoil() && !(gMoveResultFlags & MOVE_RESULT_NO_EFFECT)
+        && gHpDealt > 0 && gBattleMons[gBattlerAttacker].hp)
+    {
+        sReedwakeRecoilReturning = TRUE;
+        sReedwakeRecoilDamage = gBattleMoveDamage;
+        sReedwakeRecoilHpDealt = gHpDealt;
+        gBattleMoveDamage = max(1, gHpDealt / 4);
+        BattleScriptPushCursor();
+        gBattlescriptCurrInstr = BattleScript_MoveEffectRecoil;
+        return;
+    }
+
+    if (gChosenMove == MOVE_UNAVAILABLE)"""),
     ("    if (gProtectStructs[gBattlerAttacker].helpingHand)\n        gBattleMoveDamage = gBattleMoveDamage * 15 / 10;\n",
      "    if (gProtectStructs[gBattlerAttacker].helpingHand)\n        gBattleMoveDamage = gBattleMoveDamage * 15 / 10;\n"
      "    gBattleMoveDamage = ReedwakeTimelineDamage(gBattleMoveDamage);\n"),

@@ -5,12 +5,13 @@ enum { RW_ATTACK, RW_DEFEND, RW_DODGE };
 struct ReedwakeTimeline
 {
     u8 queue[2][8], aim[8], count[2], next[2], clock[2], position[2], boost[2], party[2];
-    u8 requested, active, started, prompt, incoming, percent, dug[2], fly[2];
+    u8 requested, active, started, prompt, incoming, percent, guardRecoil, dug[2], fly[2];
 };
 static EWRAM_DATA struct ReedwakeTimeline sTimeline = {0};
 static const u8 sTimelinePrompt[] = _(" incoming!\nA: Clash  B: Guard  R/Arrows: Dodge");
 static const u8 sTimelineWeak[] = _("The reaction was too weak!");
-static const u8 sTimelineCharge[] = _("Changed battle position!");
+static const u8 sTimelineDig[] = _("Burrowed underground!");
+static const u8 sTimelineFly[] = _("Rose into the air!");
 static const u8 sTimelineBlock[] = _("The attack was blocked!");
 static const u8 sTimelineStrong[] = _("The reaction overpowered the move!");
 static const u8 sTimelineStagger[] = _("Staggered! The remaining queue fell apart!");
@@ -84,7 +85,7 @@ bool8 ReedwakeSetQueue(u8 battler, const u8 *slots, const u8 *positions, u8 coun
 
 static bool8 ReedwakeHasType(u8 battler, u8 type)
 {
-    return gBattleMons[battler].type1 == type || gBattleMons[battler].type2 == type;
+    return gBattleMons[battler].types[0] == type || gBattleMons[battler].types[1] == type;
 }
 
 static u32 ReedwakeSpeed(u8 battler)
@@ -175,7 +176,7 @@ static void ReedwakeAction(u8 battler, u8 multiplier)
         sTimeline.position[battler] = move == MOVE_DIG ? RW_UNDER : RW_AIR;
         sTimeline.dug[battler] = move == MOVE_DIG;
         sTimeline.fly[battler] = move == MOVE_FLY;
-        BattlePutTextOnWindow(sTimelineCharge, B_WIN_MSG);
+        BattlePutTextOnWindow(move == MOVE_DIG ? sTimelineDig : sTimelineFly, B_WIN_MSG);
         return;
     }
     if (battler == 0 && !sTimeline.dug[battler] && !sTimeline.fly[battler])
@@ -188,6 +189,7 @@ static void ReedwakeAction(u8 battler, u8 multiplier)
         sTimeline.boost[battler] = FALSE;
     }
     sTimeline.percent = multiplier;
+    sTimeline.guardRecoil = FALSE;
     gBattlerByTurnOrder[0] = battler;
     gBattlerByTurnOrder[1] = other;
     gActionsByTurnOrder[0] = B_ACTION_USE_MOVE;
@@ -205,6 +207,16 @@ s32 ReedwakeTimelineDamage(s32 damage)
     if (!sTimeline.active)
         return damage;
     return max(1, damage * sTimeline.percent / 100);
+}
+
+
+bool8 ReedwakeGuardRecoil(void)
+{
+    if (!sTimeline.active || !sTimeline.started || !sTimeline.guardRecoil)
+        return FALSE;
+    /* Recoil is dispatched once even if moveend runs more than once. */
+    sTimeline.guardRecoil = FALSE;
+    return TRUE;
 }
 
 bool8 ReedwakeReleaseCharge(void)
@@ -286,7 +298,10 @@ static void ReedwakeReact(u8 incoming, u8 reaction, u8 position)
             ReedwakeAction(defender, 150);
         }
         else if (reaction == RW_DEFEND)
+        {
             ReedwakeAction(incoming, 35);
+            sTimeline.guardRecoil = TRUE;
+        }
         else
         {
             ReedwakeDrop(incoming);

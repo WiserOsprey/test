@@ -1,0 +1,148 @@
+/* Host harness for the scheduler. The ROM supplies these fields and callbacks. */
+#include <assert.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+
+typedef uint8_t u8, bool8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef int32_t s32;
+
+#define EWRAM_DATA
+#define _(text) text
+#define TRUE 1
+#define FALSE 0
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#define JOY_NEW(mask) (keys & (mask))
+enum { DPAD_UP = 1, DPAD_DOWN = 2, DPAD_RIGHT = 4, DPAD_ANY = 7,
+       A_BUTTON = 8, B_BUTTON = 16, R_BUTTON = 32 };
+enum { MOVE_NONE, MOVE_TACKLE, MOVE_POUND, MOVE_SCRATCH, MOVE_QUICK_ATTACK,
+       MOVE_WING_ATTACK, MOVE_AERIAL_ACE, MOVE_METAL_CLAW, MOVE_EARTHQUAKE,
+       MOVE_MAGNITUDE, MOVE_ROCK_THROW, MOVE_WATER_GUN, MOVE_SURF, MOVE_EMBER,
+       MOVE_FLAMETHROWER, MOVE_BITE, MOVE_SPARK, MOVE_THUNDER_SHOCK, MOVE_SHOCK_WAVE,
+       MOVE_ICE_BEAM, MOVE_VINE_WHIP, MOVE_RAZOR_LEAF, MOVE_DIG, MOVE_FLY, MOVES_COUNT };
+enum { FLAG_BADGE01_GET = 0, FLAG_BADGE08_GET = 7, STAT_SPEED = 0, STATUS1_PARALYSIS = 1,
+       TYPE_GROUND = 1, TYPE_DARK, TYPE_FLYING, STATUS2_MULTIPLETURNS = 2, STATUS2_RECHARGE = 4,
+       B_ACTION_USE_MOVE = 0, B_ACTION_FINISHED = 1, B_WIN_MSG = 0, MOVE_RESULT_NO_EFFECT = 1,
+       BATTLE_TYPE_DOUBLE = 1, BATTLE_TYPE_LINK = 2, BATTLE_TYPE_RECORDED = 4, BATTLE_TYPE_FRONTIER = 8,
+       BATTLE_TYPE_SAFARI = 16, BATTLE_TYPE_WALLY_TUTORIAL = 32, BATTLE_TYPE_TRAINER = 64 };
+static u8 keys, badges = 3, gBattlersCount = 2, gChosenActionByBattler[2];
+static u32 gBattleTypeFlags, gBattleControllerExecFlags;
+static u8 gBattlerPartyIndexes[2], gBattlerByTurnOrder[2], gActionsByTurnOrder[2];
+static u8 gCurrentTurnActionNumber, gCurrentActionFuncId, gBattlerAttacker, gBattlerTarget;
+static u8 gBattleOutcome, gMoveResultFlags, gDisplayedStringBattle[128];
+static u16 gBattle_BG0_X, gBattle_BG0_Y, gCurrentMove, gChosenMoveByBattler[2];
+static const u8 gStatStageRatios[][2] = {{1, 1}};
+static const u8 gMoveNames[MOVES_COUNT][16] = {[MOVE_EARTHQUAKE] = "Earthquake", [MOVE_POUND] = "Pound"};
+static struct { u8 priority, power, accuracy; } gBattleMoves[MOVES_COUNT];
+static struct { u16 speed, attack, defense, hp, moves[4]; u8 pp[4], statStages[1], types[2];
+                u32 status1, status2; } gBattleMons[2];
+static struct { u16 encoredMove; } gDisableStructs[2];
+static struct { u8 noValidMoves; } gProtectStructs[2];
+static struct { u8 chosenMovePositions[2], moveTarget[2]; } battleStruct, *gBattleStruct = &battleStruct;
+static u16 roll = 1;
+static u16 Random(void) { return roll; }
+static bool8 FlagGet(u16 flag) { return flag < badges; }
+static bool8 IsTextPrinterActive(u8 window) { return FALSE; }
+static void BattlePutTextOnWindow(const u8 *message, u8 window) { assert(message[0]); }
+static u8 *StringCopy(u8 *dest, const u8 *source)
+{
+    size_t length = strlen((const char *)source);
+    memcpy(dest, source, length + 1);
+    return dest + length;
+}
+
+#include "reedwake_timeline.inc"
+
+static void Setup(u16 playerMove, u16 opponentMove)
+{
+    ReedwakeReset();
+    memset(gBattleMons, 0, sizeof(gBattleMons));
+    gBattleMons[0].speed = 95;
+    gBattleMons[1].speed = 80;
+    gBattleMons[0].attack = gBattleMons[0].defense = 100;
+    gBattleMons[1].attack = gBattleMons[1].defense = 100;
+    gBattleMons[0].hp = gBattleMons[1].hp = 100;
+    gBattleMons[0].moves[0] = playerMove;
+    gBattleMons[0].moves[1] = MOVE_TACKLE;
+    gBattleMons[1].moves[0] = opponentMove;
+    gBattleMons[0].pp[0] = gBattleMons[0].pp[1] = gBattleMons[1].pp[0] = 10;
+    gBattleMoves[playerMove].power = gBattleMoves[opponentMove].power = 40;
+    gBattleMoves[playerMove].accuracy = gBattleMoves[opponentMove].accuracy = 100;
+    gChosenMoveByBattler[1] = opponentMove;
+    keys = 0;
+    roll = 1;
+}
+
+int main(void)
+{
+    const u8 slots[] = {0, 0, 0, 0};
+    const u8 followUp[] = {0, 1};
+    const u8 aim[] = {RW_FRONT, RW_FRONT, RW_FRONT, RW_FRONT};
+    u8 i;
+
+    Setup(MOVE_TACKLE, MOVE_POUND);
+    assert(ReedwakeQueueLimit() == 3);
+    assert(!ReedwakeSetQueue(0, slots, aim, 4));
+    ReedwakeStart();
+    assert(!ReedwakeAdvance());
+    assert(ReedwakeSetQueue(0, slots, aim, 3));
+    ReedwakeStart();
+    assert(ReedwakeAdvance() && gBattlerByTurnOrder[0] == 0 && sTimeline.next[0] == 1);
+    sTimeline.started = FALSE;
+    assert(ReedwakeAdvance() && sTimeline.prompt && sTimeline.incoming == 1);
+    keys = B_BUTTON;
+    assert(ReedwakeAdvance() && sTimeline.next[1] == 1 && sTimeline.next[0] == 1);
+    keys = 0;
+    for (i = 2; i <= 3; i++)
+    {
+        assert(ReedwakeAdvance() && gBattlerByTurnOrder[0] == 0 && sTimeline.next[0] == i);
+        sTimeline.started = FALSE;
+    }
+    assert(!ReedwakeAdvance());
+
+    Setup(MOVE_TACKLE, MOVE_POUND);
+    assert(ReedwakeSetQueue(0, slots, aim, 3));
+    ReedwakeStart();
+    gBattleMons[0].attack = 200;
+    roll = 0;
+    ReedwakeReact(1, RW_ATTACK, RW_FRONT);
+    assert(sTimeline.next[1] == sTimeline.count[1] && sTimeline.next[0] == 1);
+    assert(ReedwakeTimelineDamage(100) == 150);
+
+    Setup(MOVE_TACKLE, MOVE_POUND);
+    assert(ReedwakeSetQueue(0, slots, aim, 2));
+    ReedwakeStart();
+    gBattleMons[0].defense = 200;
+    ReedwakeReact(1, RW_DEFEND, RW_FRONT);
+    assert(ReedwakeTimelineDamage(100) == 35);
+    assert(ReedwakeGuardRecoil() && !ReedwakeGuardRecoil());
+
+    Setup(MOVE_TACKLE, MOVE_EARTHQUAKE);
+    assert(ReedwakeSetQueue(0, slots, aim, 2));
+    ReedwakeStart();
+    gBattleMons[0].types[0] = TYPE_FLYING;
+    ReedwakeReact(1, RW_DODGE, RW_AIR);
+    assert(sTimeline.position[0] == RW_AIR && sTimeline.boost[0]);
+
+    Setup(MOVE_DIG, MOVE_POUND);
+    assert(ReedwakeSetQueue(0, followUp, aim, 2));
+    ReedwakeStart();
+    assert(sTimeline.count[0] == 2);
+    ReedwakeAction(0, 100);
+    assert(sTimeline.position[0] == RW_UNDER);
+    ReedwakeAction(0, 100);
+    gBattlerAttacker = 0;
+    gBattlerTarget = 1;
+    gCurrentMove = MOVE_TACKLE;
+    ReedwakePositionHit();
+    assert(sTimeline.position[0] == RW_FRONT && sTimeline.position[1] == RW_AIR);
+
+    Setup(MOVE_DIG, MOVE_POUND);
+    assert(ReedwakeSetQueue(0, slots, aim, 1));
+    ReedwakeStart();
+    assert(sTimeline.count[0] == 2 && sTimeline.queue[0][1] == 0);
+    puts("Reedwake timeline checks passed.");
+    return 0;
+}
