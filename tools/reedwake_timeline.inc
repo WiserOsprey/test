@@ -8,7 +8,7 @@ struct ReedwakeTimeline
     u8 requested, active, started, prompt, incoming, percent, dug[2], fly[2];
 };
 static EWRAM_DATA struct ReedwakeTimeline sTimeline = {0};
-static const u8 sTimelinePrompt[] = _("A: Clash   B: Guard   R: Dodge\nArrows: choose dodge position");
+static const u8 sTimelinePrompt[] = _(" incoming!\nA: Clash  B: Guard  R/Arrows: Dodge");
 static const u8 sTimelineWeak[] = _("The reaction was too weak!");
 static const u8 sTimelineCharge[] = _("Changed battle position!");
 static const u8 sTimelineBlock[] = _("The attack was blocked!");
@@ -127,6 +127,8 @@ static void ReedwakeStart(void)
         sTimeline.party[i] = gBattlerPartyIndexes[i];
     }
     sTimeline.active = TRUE;
+    gBattle_BG0_X = 0;
+    gBattle_BG0_Y = 0;
     sTimeline.count[0] = count;
     if (ReedwakeCharge(gBattleMons[0].moves[sTimeline.queue[0][count - 1]]))
     {
@@ -137,6 +139,9 @@ static void ReedwakeStart(void)
     sTimeline.queue[1][0] = gBattleStruct->chosenMovePositions[1];
     sTimeline.count[1] = ReedwakeCharge(gChosenMoveByBattler[1]) ? 2 : 1;
     sTimeline.queue[1][1] = sTimeline.queue[1][0];
+    if ((gBattleTypeFlags & BATTLE_TYPE_TRAINER) && count >= 3
+        && gBattleMoves[gChosenMoveByBattler[1]].power && ReedwakeCanQueue(gChosenMoveByBattler[1]))
+        sTimeline.count[1] = 2;
 }
 
 static bool8 ReedwakeReady(u8 battler)
@@ -337,18 +342,32 @@ static bool8 ReedwakeAdvance(void)
         BattlePutTextOnWindow(sTimelineBlock, B_WIN_MSG);
         return TRUE;
     }
-    if (actor == 0 && !ReedwakeCharge(move) && ReedwakeHasType(1, TYPE_FLYING)
-        && sTimeline.position[1] == RW_AIR && ReedwakeSpeed(1) * 2 >= ReedwakeSpeed(0)
-        && Random() % 4 == 0)
+    if (sTimeline.position[actor ^ 1] == RW_UNDER && gBattleMoves[move].power
+        && move != MOVE_EARTHQUAKE && move != MOVE_MAGNITUDE)
     {
-        ReedwakeReact(actor, RW_DODGE, RW_AIR);
+        ReedwakeDrop(actor);
+        BattlePutTextOnWindow(sTimelineBlock, B_WIN_MSG);
+        return TRUE;
+    }
+    if (actor == 0 && gBattleMoves[move].power && !ReedwakeCharge(move)
+        && ReedwakeSpeed(1) * 2 >= ReedwakeSpeed(0) && Random() % 5 == 0)
+    {
+        if (ReedwakeHasType(1, TYPE_FLYING) && (move == MOVE_EARTHQUAKE || move == MOVE_MAGNITUDE))
+            ReedwakeReact(actor, RW_DODGE, RW_AIR);
+        else if (ReedwakeReady(1) && gBattleMons[1].attack > gBattleMons[1].defense)
+            ReedwakeReact(actor, RW_ATTACK, RW_FRONT);
+        else if (gBattleMons[1].speed > gBattleMons[1].defense)
+            ReedwakeReact(actor, RW_DODGE, RW_BEHIND);
+        else
+            ReedwakeReact(actor, RW_DEFEND, RW_FRONT);
         return TRUE;
     }
     if (actor == 1 && gBattleMoves[move].power && !ReedwakeCharge(move) && ReedwakeSpeed(0) * 2 >= ReedwakeSpeed(1))
     {
         sTimeline.incoming = actor;
         sTimeline.prompt = TRUE;
-        BattlePutTextOnWindow(sTimelinePrompt, B_WIN_MSG);
+        StringCopy(StringCopy(gDisplayedStringBattle, gMoveNames[move]), sTimelinePrompt);
+        BattlePutTextOnWindow(gDisplayedStringBattle, B_WIN_MSG);
     }
     else
         ReedwakeAction(actor, 100);

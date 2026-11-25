@@ -45,7 +45,10 @@ edit("src/battle_main.c", [
     (focus, timeline + "\n" + focus),
     ("    gBattleMainFunc = RunTurnActionsFunctions;\n    gBattleCommunication[3] = 0;",
      "    ReedwakeStart();\n    gBattleMainFunc = RunTurnActionsFunctions;\n    gBattleCommunication[3] = 0;"),
-    (run, run + """    if (sTimeline.active && !sTimeline.started)
+    (run, run + """    if (sTimeline.active && sTimeline.started && gCurrentActionFuncId == B_ACTION_USE_MOVE
+        && IsTextPrinterActive(B_WIN_MSG))
+        return;
+    if (sTimeline.active && !sTimeline.started)
     {
         if (ReedwakeAdvance())
             return;

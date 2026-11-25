@@ -63,7 +63,5 @@ static bool8 ReedwakeMoveInput(const struct ChooseMoveStruct *moveInfo)
         }
         return TRUE;
     }
-    if (JOY_NEW(DPAD_ANY))
-        return FALSE;
     return FALSE;
 }
