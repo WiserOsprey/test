@@ -22,6 +22,7 @@ on:
       - assets/siltstilt/**
       - assets/podtick/**
       - assets/bendruff/**
+      - assets/delta_starters/**
       - assets/bramblet/**
       - assets/canoplate/**
       - assets/flareden/**
@@ -102,7 +103,7 @@ jobs:
           python3 tools/install_fernut_sprites.py assets/flareden/front.png assets/flareden/back.png source/graphics/pokemon/combusken
           python3 tools/install_fernut_sprites.py assets/vulprism/front.png assets/vulprism/back.png source/graphics/pokemon/blaziken
           python3 tools/install_fernut_sprites.py assets/estuarch/front.png assets/estuarch/back.png source/graphics/pokemon/swampert
-          python3 tools/install_delta_lab.py data/reedwake/regional_dex.json "$GITHUB_WORKSPACE/source"
+          python3 tools/install_delta_lab.py data/reedwake/regional_dex.json "$GITHUB_WORKSPACE/source" assets/delta_starters
 
       - name: Build the ROM
         working-directory: source

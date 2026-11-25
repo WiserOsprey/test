@@ -5,7 +5,11 @@ import re
 import sys
 from pathlib import Path
 
-roster_path, source = map(Path, sys.argv[1:3])
+from PIL import Image
+
+from emerald_sprites import install_pair
+
+roster_path, source, assets = map(Path, sys.argv[1:4])
 roster = json.loads(roster_path.read_text(encoding="utf-8"))
 entries = {entry["name"]: entry for entry in roster["species"]}
 
@@ -21,11 +25,16 @@ starter_slots = {
     "Bendruff": ("MARSHTOMP", "J"),
     "Estuarch": ("SWAMPERT", "K"),
 }
-palette_tints = {
-    "Electric": ((235, 185, 50), (93, 212, 230)),
-    "Ghost": ((167, 106, 221), (112, 214, 192)),
-    "Psychic": ((232, 106, 169), (235, 187, 91)),
-    "Ice": ((117, 215, 245), (188, 153, 245)),
+delta_moves = {
+    "Fernut": [(9, "THUNDER_SHOCK"), (24, "SPARK")],
+    "Bramblet": [(9, "THUNDER_SHOCK"), (24, "SPARK"), (39, "THUNDERBOLT")],
+    "Canoplate": [(12, "ROCK_THROW"), (24, "SPARK"), (42, "ROCK_SLIDE"), (48, "THUNDERBOLT")],
+    "Cindrix": [(9, "ASTONISH"), (24, "NIGHT_SHADE")],
+    "Flareden": [(9, "ASTONISH"), (24, "NIGHT_SHADE"), (39, "SHADOW_BALL")],
+    "Vulprism": [(12, "CONFUSION"), (22, "BITE"), (42, "CRUNCH"), (48, "PSYCHIC")],
+    "Rillfin": [(12, "ICY_WIND"), (26, "AURORA_BEAM")],
+    "Bendruff": [(12, "ICY_WIND"), (26, "AURORA_BEAM"), (41, "ICE_BEAM")],
+    "Estuarch": [(12, "ICY_WIND"), (19, "DOUBLE_KICK"), (40, "BRICK_BREAK"), (47, "ICE_BEAM")],
 }
 files = {}
 
@@ -71,37 +80,59 @@ def clone_row(path, base, dormant, delta):
                                             lambda m: (m[1] or "") + delta, row))
 
 
-def make_palette(base, delta, tints):
-    palette_path = f"graphics/pokemon/{base.lower()}/normal.pal"
-    header, version, count, *colors = read(palette_path).splitlines()
-    if (header, version, count) != ("JASC-PAL", "0100", "16") or len(colors) != 16:
-        raise SystemExit(f"Invalid palette: {palette_path}")
+def install_delta_art(name, base, delta):
+    """Keep the engine's frame count and give the Delta form its own sprite data."""
+    original = source / "graphics/pokemon" / base.lower()
+    with Image.open(original / "anim_front.png") as sheet:
+        animation_size = sheet.size
 
-    for suffix, tint in zip(("normal", "shiny"), tints):
-        mapped = [colors[0]]
-        for color in colors[1:]:
-            rgb = tuple(map(int, color.split()))
-            light = (54 * rgb[0] + 183 * rgb[1] + 19 * rgb[2]) / 256
-            strength = min(light / 150, 1.0)
-            high = max(0, light - 150) / 105
-            tone = tuple(channel * strength + (255 - channel) * high for channel in tint)
-            tinted = [round(original * 0.32 + hue * 0.68) for original, hue in zip(rgb, tone)]
-            mapped.append(" ".join(map(str, tinted)))
-        path = f"graphics/pokemon/{base.lower()}/delta_{suffix}.pal"
-        write_new(path, "\n".join([header, version, count, *mapped, ""]))
-        symbol = f"gReedwake{delta.title().replace('_', '')}{suffix.title()}Palette"
+    art = assets / name.lower()
+    output = source / "graphics/pokemon/reedwake_delta" / name.lower()
+    install_pair(art / "front.png", art / "back.png", output, animation_size)
+
+    for filename, macro, graphic, file, extension in (
+        ("front_pic_table.h", "SPECIES_SPRITE", "FrontPic", "anim_front.png", ".4bpp.lz"),
+        ("still_front_pic_table.h", "SPECIES_SPRITE", "StillFrontPic", "front.png", ".4bpp.lz"),
+        ("back_pic_table.h", "SPECIES_SPRITE", "BackPic", "back.png", ".4bpp.lz"),
+        ("palette_table.h", "SPECIES_PAL", "Palette", "normal.pal", ".gbapal.lz"),
+        ("shiny_palette_table.h", "SPECIES_SHINY_PAL", "ShinyPalette", "shiny.pal", ".gbapal.lz"),
+    ):
+        symbol = f"gReedwakeDelta{identifier(name).title()}{graphic}"
+        asset_file = (output / file).relative_to(source).as_posix()
         append("src/data/graphics/pokemon.h",
-               f'const u32 {symbol}[] = INCGFX_U32("{path}", ".gbapal.lz");')
+               f'const u32 {symbol}[] = INCGFX_U32("{asset_file}", "{extension}");')
         replace("include/graphics.h", "extern const u32 gMonPalette_Bulbasaur[];",
                 f"extern const u32 {symbol}[];\nextern const u32 gMonPalette_Bulbasaur[];")
-        filename, macro = {
-            "normal": ("palette_table.h", "SPECIES_PAL"),
-            "shiny": ("shiny_palette_table.h", "SPECIES_SHINY_PAL"),
-        }[suffix]
-        replace(f"src/data/pokemon_graphics/{filename}",
-                f"{macro}({dormant_ids[delta]}, gMon{'Shiny' if suffix == 'shiny' else ''}Palette_DoubleQuestionMark)",
-                f"{macro}({delta}, {symbol})")
 
+        table = f"src/data/pokemon_graphics/{filename}"
+        old = dormant_ids[delta] if graphic.endswith("Palette") else delta
+        pattern = rf"\b{macro}\({old},\s*\w+\)"
+        row = re.search(pattern, read(table))
+        if row is None:
+            raise SystemExit(f"Missing {old} in {table}")
+        replace(table, row[0], f"{macro}({delta}, {symbol})")
+
+
+def install_delta_learnset(name, delta):
+    path = "src/data/pokemon/level_up_learnset_pointers.h"
+    line = re.search(rf"(?m)^    \[SPECIES_{delta}\] = (\w+),$", read(path))
+    if line is None:
+        raise SystemExit(f"Missing learnset pointer for {name}")
+    base_learnset = line[1]
+    data_path = "src/data/pokemon/level_up_learnsets.h"
+    original = re.search(rf"(?ms)^static const u16 {base_learnset}\[\] = \{{(.*?)^\}};",
+                         read(data_path))
+    if original is None:
+        raise SystemExit(f"Missing level-up moves for {name}")
+    moves = [(int(level), move) for level, move in
+             re.findall(r"LEVEL_UP_MOVE\(\s*(\d+),\s*MOVE_(\w+)\)", original[1])]
+    existing = {move for _, move in moves}
+    moves.extend((level, move) for level, move in delta_moves[name] if move not in existing)
+    moves.sort(key=lambda pair: pair[0])
+    name = f"sReedwakeDelta{name}LevelUpLearnset"
+    rows = "\n".join(f"    LEVEL_UP_MOVE({level:2d}, MOVE_{move})," for level, move in moves)
+    append(data_path, f"static const u16 {name}[] = {{\n{rows}\n    LEVEL_UP_END\n}};")
+    replace(path, line[0], f"    [SPECIES_{delta}] = {name},")
 
 dormant_ids = {f"DELTA_{identifier(name)}": f"OLD_UNOWN_{letter}"
                for name, (_, letter) in starter_slots.items()}
@@ -153,7 +184,8 @@ for name, (base, letter) in starter_slots.items():
     ):
         clone_row(path, base, dormant, delta)
 
-    make_palette(base, delta, palette_tints[entry["deltaTypes"][1]])
+    install_delta_art(name, base, delta)
+    install_delta_learnset(name, delta)
     mapping.append(f"    {{SPECIES_{base}, SPECIES_{delta}}},")
     if entry["evolvesTo"]:
         target = f"SPECIES_DELTA_{identifier(entry['evolvesTo'])}"

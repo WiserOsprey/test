@@ -59,10 +59,13 @@ def shiny_palette(colors):
     return result
 
 
-def write_battle_sprites(out_dir, front, back, colors):
+def write_battle_sprites(out_dir, front, back, colors, animation_size=None):
+    out_dir.mkdir(parents=True, exist_ok=True)
     animation_path = out_dir / "anim_front.png"
-    with Image.open(animation_path) as previous_animation:
-        width, height = previous_animation.size
+    if animation_size is None:
+        with Image.open(animation_path) as previous_animation:
+            animation_size = previous_animation.size
+    width, height = animation_size
     if width % 64 or height % 64:
         raise ValueError(f"Unsupported animation sheet dimensions: {width} x {height}")
     frames = Image.new("P", (width, height))
@@ -77,3 +80,16 @@ def write_battle_sprites(out_dir, front, back, colors):
     back.save(out_dir / "back.png", transparency=0)
     write_palette(out_dir / "normal.pal", colors)
     write_palette(out_dir / "shiny.pal", shiny_palette(colors))
+
+
+def install_pair(front_path, back_path, out_dir, animation_size=None):
+    front = fit_sprite(front_path)
+    back = fit_sprite(back_path)
+    pixels = [pixel[:3] for view in (front, back) for pixel in view.getdata() if pixel[3]]
+    sample = Image.new("RGB", (len(pixels), 1))
+    sample.putdata(pixels)
+    quantized = sample.quantize(colors=15, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
+    palette = quantized.getpalette()[:45]
+    colors = [(0, 0, 0), *(tuple(palette[i:i + 3]) for i in range(0, 45, 3))]
+
+    write_battle_sprites(out_dir, index_sprite(front, colors), index_sprite(back, colors), colors, animation_size)
