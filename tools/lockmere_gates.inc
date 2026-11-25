@@ -98,3 +98,12 @@ Lockmere_Text_UpperCrossing:
 Lockmere_Text_ServiceLadder:
 	.string "The intake below is shut. Take the\n"
 	.string "service ladder back to the entrance.$"
+
+Lockmere_FieldStation::
+	goto_if_set FLAG_BADGE01_GET, ReedwakeDelta_EventScript_LockmereLab
+	msgbox Lockmere_Text_StationLocked, MSGBOX_SIGN
+	end
+
+Lockmere_Text_StationLocked:
+	.string "LOCKMERE FIELD STATION\p"
+	.string "Certified surveyors only.$"

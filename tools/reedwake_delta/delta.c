@@ -8,6 +8,7 @@
 #include "pokemon.h"
 #include "reedwake_delta.h"
 #include "string_util.h"
+#include "constants/items.h"
 #include "constants/maps.h"
 #include "constants/moves.h"
 #include "constants/species.h"
@@ -22,6 +23,9 @@ enum
     DELTA_GRASS_TRIAL_REQUIRED,
     DELTA_FIRE_TRIAL_REQUIRED,
     DELTA_WATER_TRIAL_REQUIRED,
+    DELTA_SILTMOLE_TRIAL_REQUIRED,
+    DELTA_GATEGRUB_TRIAL_REQUIRED,
+    DELTA_LOCKMOLE_TRIAL_REQUIRED,
 };
 
 static const struct
@@ -33,33 +37,40 @@ static const struct
     /* Delta mapping */
 };
 
-struct StarterTrial
+struct FieldTrial
 {
     u16 forms[3];
     u16 map;
+    u16 heldItem;
     u8 moveType;
     u8 message;
 };
 
-static const struct StarterTrial sStarterTrials[] =
+static const struct FieldTrial sFieldTrials[] =
 {
-    {{SPECIES_TREECKO, SPECIES_GROVYLE, SPECIES_SCEPTILE}, MAP_ROUTE101, TYPE_GRASS, DELTA_GRASS_TRIAL_REQUIRED},
-    {{SPECIES_TORCHIC, SPECIES_COMBUSKEN, SPECIES_BLAZIKEN}, MAP_ROUTE103, TYPE_FIRE, DELTA_FIRE_TRIAL_REQUIRED},
-    {{SPECIES_MUDKIP, SPECIES_MARSHTOMP, SPECIES_SWAMPERT}, MAP_ROUTE102, TYPE_WATER, DELTA_WATER_TRIAL_REQUIRED},
+    {{SPECIES_TREECKO, SPECIES_GROVYLE, SPECIES_SCEPTILE}, MAP_ROUTE101, ITEM_NONE, TYPE_GRASS, DELTA_GRASS_TRIAL_REQUIRED},
+    {{SPECIES_TORCHIC, SPECIES_COMBUSKEN, SPECIES_BLAZIKEN}, MAP_ROUTE103, ITEM_NONE, TYPE_FIRE, DELTA_FIRE_TRIAL_REQUIRED},
+    {{SPECIES_MUDKIP, SPECIES_MARSHTOMP, SPECIES_SWAMPERT}, MAP_ROUTE102, ITEM_NONE, TYPE_WATER, DELTA_WATER_TRIAL_REQUIRED},
+    {{SPECIES_GEODUDE}, MAP_RUSTURF_TUNNEL, ITEM_NONE, TYPE_GROUND, DELTA_SILTMOLE_TRIAL_REQUIRED},
+    {{SPECIES_GRAVELER}, MAP_RUSTURF_TUNNEL, ITEM_ORAN_BERRY, TYPE_ROCK, DELTA_GATEGRUB_TRIAL_REQUIRED},
+    {{SPECIES_GOLEM}, MAP_ROUTE116, ITEM_NONE, TYPE_STEEL, DELTA_LOCKMOLE_TRIAL_REQUIRED},
 };
 
 static EWRAM_DATA u16 sBattleTrialMask = 0;
 
-static s32 FindStarterTrial(u16 species)
+static s32 FindFieldTrial(u16 species)
 {
     s32 trial;
     u8 stage;
 
-    for (trial = 0; trial < ARRAY_COUNT(sStarterTrials); trial++)
+    if (species == SPECIES_NONE)
+        return -1;
+
+    for (trial = 0; trial < ARRAY_COUNT(sFieldTrials); trial++)
     {
-        for (stage = 0; stage < ARRAY_COUNT(sStarterTrials[trial].forms); stage++)
+        for (stage = 0; stage < ARRAY_COUNT(sFieldTrials[trial].forms); stage++)
         {
-            if (sStarterTrials[trial].forms[stage] == species)
+            if (sFieldTrials[trial].forms[stage] == species)
                 return trial;
         }
     }
@@ -74,7 +85,7 @@ void ReedwakeDelta_StartBattle(void)
 void ReedwakeDelta_RecordMove(u8 battler, u16 move)
 {
     u8 slot;
-    const struct StarterTrial *recipe;
+    const struct FieldTrial *recipe;
     s32 trial;
 
     if (gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED | BATTLE_TYPE_FRONTIER
@@ -85,21 +96,22 @@ void ReedwakeDelta_RecordMove(u8 battler, u16 move)
     slot = gBattlerPartyIndexes[battler];
     if (slot >= PARTY_SIZE)
         return;
-    trial = FindStarterTrial(GetMonData(&gPlayerParty[slot], MON_DATA_SPECIES_OR_EGG));
-    if (trial < 0 || (VarGet(VAR_REEDWAKE_STARTER_TRIALS) & (1 << trial)))
+    trial = FindFieldTrial(GetMonData(&gPlayerParty[slot], MON_DATA_SPECIES_OR_EGG));
+    if (trial < 0 || (VarGet(VAR_REEDWAKE_FIELD_TRIALS) & (1 << trial)))
         return;
 
-    recipe = &sStarterTrials[trial];
+    recipe = &sFieldTrials[trial];
     if (gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(recipe->map)
         && gSaveBlock1Ptr->location.mapNum == MAP_NUM(recipe->map)
-        && gBattleMoves[move].type == recipe->moveType)
+        && gBattleMoves[move].type == recipe->moveType
+        && (recipe->heldItem == ITEM_NONE || gBattleMons[battler].item == recipe->heldItem))
         sBattleTrialMask |= 1 << trial;
 }
 
 void ReedwakeDelta_FinishBattle(void)
 {
     if (sBattleTrialMask && gBattleOutcome == B_OUTCOME_WON)
-        VarSet(VAR_REEDWAKE_STARTER_TRIALS, VarGet(VAR_REEDWAKE_STARTER_TRIALS) | sBattleTrialMask);
+        VarSet(VAR_REEDWAKE_FIELD_TRIALS, VarGet(VAR_REEDWAKE_FIELD_TRIALS) | sBattleTrialMask);
 }
 
 u16 ReedwakeDelta_GetStandardSpecies(u16 species)
@@ -147,9 +159,9 @@ static u16 GetSelectedForm(struct Pokemon **selected, u16 *target)
 
     if (species == SPECIES_BULBASAUR && !(BulbasaurNotes_GetUnlocks() & BULBASAUR_NOTES_DELTA))
         return DELTA_TRIAL_REQUIRED;
-    trial = FindStarterTrial(species);
-    if (trial >= 0 && !(VarGet(VAR_REEDWAKE_STARTER_TRIALS) & (1 << trial)))
-        return sStarterTrials[trial].message;
+    trial = FindFieldTrial(species);
+    if (trial >= 0 && !(VarGet(VAR_REEDWAKE_FIELD_TRIALS) & (1 << trial)))
+        return sFieldTrials[trial].message;
 
     return DELTA_READY;
 }

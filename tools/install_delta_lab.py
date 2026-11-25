@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install Reedwake's permanent starter Delta forms and the field lab."""
+"""Install Reedwake's permanent Delta forms and the field lab."""
 import json
 import re
 import sys
@@ -14,7 +14,7 @@ roster = json.loads(roster_path.read_text(encoding="utf-8"))
 entries = {entry["name"]: entry for entry in roster["species"]}
 
 # These dormant Emerald slots precede the Hoenn species range.
-starter_slots = {
+delta_slots = {
     "Fernut": ("TREECKO", "C"),
     "Bramblet": ("GROVYLE", "D"),
     "Canoplate": ("SCEPTILE", "E"),
@@ -24,6 +24,9 @@ starter_slots = {
     "Rillfin": ("MUDKIP", "I"),
     "Bendruff": ("MARSHTOMP", "J"),
     "Estuarch": ("SWAMPERT", "K"),
+    "Siltmole": ("GEODUDE", "L"),
+    "Gategrub": ("GRAVELER", "M"),
+    "Lockmole": ("GOLEM", "N"),
 }
 delta_moves = {
     "Fernut": [(9, "THUNDER_SHOCK"), (24, "SPARK")],
@@ -35,6 +38,9 @@ delta_moves = {
     "Rillfin": [(12, "ICY_WIND"), (26, "AURORA_BEAM")],
     "Bendruff": [(12, "ICY_WIND"), (26, "AURORA_BEAM"), (41, "ICE_BEAM")],
     "Estuarch": [(12, "ICY_WIND"), (19, "DOUBLE_KICK"), (40, "BRICK_BREAK"), (47, "ICE_BEAM")],
+    "Siltmole": [(7, "WATER_GUN"), (18, "BUBBLE_BEAM")],
+    "Gategrub": [(7, "WATER_GUN"), (19, "WATER_PULSE"), (36, "MUDDY_WATER")],
+    "Lockmole": [(7, "WATER_GUN"), (19, "WATER_PULSE"), (36, "MUDDY_WATER")],
 }
 files = {}
 
@@ -135,7 +141,7 @@ def install_delta_learnset(name, delta):
     replace(path, line[0], f"    [SPECIES_{delta}] = {name},")
 
 dormant_ids = {f"DELTA_{identifier(name)}": f"OLD_UNOWN_{letter}"
-               for name, (_, letter) in starter_slots.items()}
+               for name, (_, letter) in delta_slots.items()}
 constants = "include/constants/species.h"
 stats_path = "src/data/pokemon/species_info.h"
 evo_path = "src/data/pokemon/evolution.h"
@@ -144,7 +150,7 @@ type_constants = read("include/constants/pokemon.h")
 mapping = ["    {SPECIES_BULBASAUR, SPECIES_DELTA_BULBASAUR},"]
 evolutions = []
 
-for name, (base, letter) in starter_slots.items():
+for name, (base, letter) in delta_slots.items():
     entry = entries[name]
     delta = f"DELTA_{identifier(name)}"
     dormant = dormant_ids[delta]
@@ -207,7 +213,7 @@ void ReedwakeDelta_FinishBattle(void);
 write_new("include/reedwake_delta.h", header)
 
 replace("include/constants/vars.h", "VAR_UNUSED_0x40F8                                0x40F8 // Unused Var",
-        "VAR_REEDWAKE_STARTER_TRIALS                      0x40F8")
+        "VAR_REEDWAKE_FIELD_TRIALS                      0x40F8")
 for path in ("src/battle_main.c", "src/battle_script_commands.c"):
     replace(path, '#include "bulbasaur_field_notes.h"',
             '#include "bulbasaur_field_notes.h"\n#include "reedwake_delta.h"')
@@ -244,7 +250,7 @@ replace("src/daycare.c", "    // Working backwards up to 5 times seems arbitrary
 
 # Reuse the original icon graphics and back animation for each form.
 icons = "src/pokemon_icon.c"
-for name, (base, letter) in starter_slots.items():
+for name, (base, letter) in delta_slots.items():
     delta = f"DELTA_{identifier(name)}"
     dormant = dormant_ids[delta]
     entries_for_base = re.findall(rf"(?m)^    \[SPECIES_{base}\] = .+$", read(icons))
@@ -257,7 +263,7 @@ path = "src/pokemon_animation.c"
 opening = "static const u8 sSpeciesToBackAnimSet[] =\n{"
 if opening not in read(path):
     raise SystemExit("Missing back animation table")
-for name, (base, _) in starter_slots.items():
+for name, (base, _) in delta_slots.items():
     row = re.search(rf"(?m)^    \[SPECIES_{base}\]\s+= BACK_ANIM_[A-Z_]+,",
                     read(path))
     if row is None:

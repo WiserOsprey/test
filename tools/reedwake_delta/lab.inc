@@ -1,6 +1,13 @@
 ReedwakeDelta_EventScript_Lab::
 	lockall
 	msgbox ReedwakeDelta_Text_Offer, MSGBOX_YESNO
+	goto ReedwakeDelta_EventScript_Select
+
+ReedwakeDelta_EventScript_LockmereLab::
+	lockall
+	msgbox ReedwakeDelta_Text_LockmereOffer, MSGBOX_YESNO
+
+ReedwakeDelta_EventScript_Select:
 	goto_if_eq VAR_RESULT, NO, ReedwakeDelta_EventScript_Close
 	special ChoosePartyMon
 	waitstate
@@ -11,6 +18,9 @@ ReedwakeDelta_EventScript_Lab::
 	goto_if_eq VAR_RESULT, 4, ReedwakeDelta_EventScript_GrassTrial
 	goto_if_eq VAR_RESULT, 5, ReedwakeDelta_EventScript_FireTrial
 	goto_if_eq VAR_RESULT, 6, ReedwakeDelta_EventScript_WaterTrial
+	goto_if_eq VAR_RESULT, 7, ReedwakeDelta_EventScript_SiltmoleTrial
+	goto_if_eq VAR_RESULT, 8, ReedwakeDelta_EventScript_GategrubTrial
+	goto_if_eq VAR_RESULT, 9, ReedwakeDelta_EventScript_LockmoleTrial
 	goto_if_ne VAR_RESULT, 1, ReedwakeDelta_EventScript_Unsupported
 	msgbox ReedwakeDelta_Text_Confirm, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, NO, ReedwakeDelta_EventScript_Close
@@ -39,6 +49,18 @@ ReedwakeDelta_EventScript_WaterTrial:
 	msgbox ReedwakeDelta_Text_WaterTrial, MSGBOX_DEFAULT
 	goto ReedwakeDelta_EventScript_Close
 
+ReedwakeDelta_EventScript_SiltmoleTrial:
+	msgbox ReedwakeDelta_Text_SiltmoleTrial, MSGBOX_DEFAULT
+	goto ReedwakeDelta_EventScript_Close
+
+ReedwakeDelta_EventScript_GategrubTrial:
+	msgbox ReedwakeDelta_Text_GategrubTrial, MSGBOX_DEFAULT
+	goto ReedwakeDelta_EventScript_Close
+
+ReedwakeDelta_EventScript_LockmoleTrial:
+	msgbox ReedwakeDelta_Text_LockmoleTrial, MSGBOX_DEFAULT
+	goto ReedwakeDelta_EventScript_Close
+
 ReedwakeDelta_EventScript_Unsupported:
 	msgbox ReedwakeDelta_Text_Unsupported, MSGBOX_DEFAULT
 
@@ -48,6 +70,11 @@ ReedwakeDelta_EventScript_Close:
 
 ReedwakeDelta_Text_Offer:
 	.string "BRACKENHAVEN RESONANCE LAB\p"
+	.string "Choose a POKéMON for a\n"
+	.string "DELTA experiment?$"
+
+ReedwakeDelta_Text_LockmereOffer:
+	.string "LOCKMERE FIELD STATION\p"
 	.string "Choose a POKéMON for a\n"
 	.string "DELTA experiment?$"
 
@@ -80,6 +107,21 @@ ReedwakeDelta_Text_WaterTrial:
 	.string "We need a reading from this family.\p"
 	.string "On REEDBANK PATH, use a WATER move\n"
 	.string "with it and win the wild battle.$"
+
+ReedwakeDelta_Text_SiltmoleTrial:
+	.string "Take SILTMOLE to GATEWORKS TUNNEL.\p"
+	.string "Use a GROUND move with it and\n"
+	.string "win the wild battle.$"
+
+ReedwakeDelta_Text_GategrubTrial:
+	.string "Take GATEGRUB to GATEWORKS TUNNEL.\p"
+	.string "Use a ROCK move while it's holding\n"
+	.string "an ORAN BERRY. Win that battle.$"
+
+ReedwakeDelta_Text_LockmoleTrial:
+	.string "Take LOCKMOLE to LOCKMERE CUT.\p"
+	.string "Use a STEEL move with it and\n"
+	.string "win the wild battle.$"
 
 ReedwakeDelta_Text_Unsupported:
 	.string "The lab has no recipe for this\n"

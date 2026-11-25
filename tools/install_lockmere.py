@@ -38,7 +38,7 @@ def make_gym_tiles():
     art = {}
     for name, color in (
         ("floor", 3), ("water", 2), ("gate", 2), ("crossing", 10),
-        ("intake", 3), ("fill", 3), ("relief", 3), ("gauge", 3),
+        ("intake", 3), ("fill", 3), ("relief", 3), ("gauge", 3), ("station", 3),
     ):
         art[name] = Image.new("P", (16, 16), color)
 
@@ -91,6 +91,13 @@ def make_gym_tiles():
     draw.arc((5, 5, 10, 10), 180, 360, fill=8)
     draw.line((7, 8, 10, 6), fill=15)
     draw.point((7, 8), fill=14)
+
+    draw = ImageDraw.Draw(art["station"])
+    draw.rectangle((2, 2, 13, 14), fill=1, outline=5)
+    draw.rectangle((4, 3, 11, 8), fill=5, outline=7)
+    draw.line((5, 7, 6, 5, 8, 6, 10, 4), fill=8)
+    draw.line((4, 10, 11, 10), fill=6)
+    draw.point([(5, 12), (8, 12), (10, 12)], fill=13)
 
     tiles_path = tileset / "tiles.png"
     with Image.open(tiles_path) as image:
@@ -156,7 +163,7 @@ def build_gym_map(ids):
     for x in (5, 6):
         for y in (6, 8, 11, 13, 14):
             place(x, y, ids["crossing"])
-    for name, x, y in (("intake", 2, 15), ("fill", 2, 9), ("gauge", 5, 9), ("relief", 8, 9)):
+    for name, x, y in (("intake", 2, 15), ("fill", 2, 9), ("gauge", 5, 9), ("relief", 8, 9), ("station", 8, 4)):
         place(x, y, ids[name], True)
     place(2, 18, 0x226, True)
     place(8, 18, 0x226, True)
@@ -178,6 +185,7 @@ def build_gym_map(ids):
     for x, y, script in (
         (2, 15, "Lockmere_OpenIntake"), (2, 9, "Lockmere_FillValve"),
         (5, 9, "Lockmere_ReadGauge"), (8, 9, "Lockmere_ReliefValve"),
+        (8, 4, "Lockmere_FieldStation"),
     ):
         events["bg_events"].append({
             "type": "sign", "x": x, "y": y, "elevation": 0,
