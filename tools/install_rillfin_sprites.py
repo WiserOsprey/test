@@ -19,7 +19,7 @@ def load_jasc(path):
 colors = load_jasc(palette_path)
 out_dir.mkdir(parents=True, exist_ok=True)
 # Front was already reduced and inspected at its configured native canvas.
-Image.open(front_path).convert("RGBA").save(out_dir / "front.png")
+Image.open(front_path).save(out_dir / "front.png")
 
 source = Image.open(back_path).convert("RGBA")
 alpha = source.getchannel("A")
