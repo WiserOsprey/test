@@ -14,13 +14,14 @@ on:
       - data/reedwake/**
       - tools/install_rillfin_sprites.py
       - tools/install_fernut_sprites.py
+      - tools/emerald_sprites.py
       - assets/rillfin/**
       - assets/fernut/**
       - assets/cindrix/**
       - assets/peathare/**
       - assets/siltstilt/**
       - assets/podtick/**
-      - assets/rillfin/**
+      - assets/bendruff/**
       - Pokemon - Emerald Version (U).gba
   workflow_dispatch:
 
@@ -85,12 +86,12 @@ jobs:
           python3 hack/tools/install_science_palette.py "$GITHUB_WORKSPACE/source" "$GITHUB_WORKSPACE/hack/purple-pokedex-gba/science-fantasy/bg_science_fantasy.pal"
           python3 tools/install_evolution_species.py data/reedwake/regional_dex.json "$GITHUB_WORKSPACE/source"
           python3 tools/install_rillfin_sprites.py assets/rillfin/front.png assets/rillfin/back_concept.png assets/rillfin/normal.pal source/graphics/pokemon/mudkip
-          cp assets/rillfin/normal.pal source/graphics/pokemon/mudkip/normal.pal
           python3 tools/install_fernut_sprites.py assets/fernut/front_concept.png assets/fernut/back_concept.png source/graphics/pokemon/treecko
           python3 tools/install_fernut_sprites.py assets/cindrix/front_concept.png assets/cindrix/back_concept.png source/graphics/pokemon/torchic
           python3 tools/install_fernut_sprites.py assets/peathare/front_concept.png assets/peathare/back_concept.png source/graphics/pokemon/poochyena
           python3 tools/install_fernut_sprites.py assets/siltstilt/front_concept.png assets/siltstilt/back_concept.png source/graphics/pokemon/zigzagoon
           python3 tools/install_fernut_sprites.py assets/podtick/front_concept.png assets/podtick/back_concept.png source/graphics/pokemon/wurmple
+          python3 tools/install_fernut_sprites.py assets/bendruff/front.png assets/bendruff/back.png source/graphics/pokemon/marshtomp
           python3 tools/install_delta_lab.py data/reedwake/regional_dex.json "$GITHUB_WORKSPACE/source"
 
       - name: Build the ROM
