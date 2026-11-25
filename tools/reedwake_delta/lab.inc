@@ -8,6 +8,9 @@ ReedwakeDelta_EventScript_Lab::
 	specialvar VAR_RESULT, ReedwakeDelta_CheckSelected
 	goto_if_eq VAR_RESULT, 2, ReedwakeDelta_EventScript_TrialRequired
 	goto_if_eq VAR_RESULT, 3, ReedwakeDelta_EventScript_AlreadyConverted
+	goto_if_eq VAR_RESULT, 4, ReedwakeDelta_EventScript_GrassTrial
+	goto_if_eq VAR_RESULT, 5, ReedwakeDelta_EventScript_FireTrial
+	goto_if_eq VAR_RESULT, 6, ReedwakeDelta_EventScript_WaterTrial
 	goto_if_ne VAR_RESULT, 1, ReedwakeDelta_EventScript_Unsupported
 	msgbox ReedwakeDelta_Text_Confirm, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, NO, ReedwakeDelta_EventScript_Close
@@ -22,6 +25,18 @@ ReedwakeDelta_EventScript_TrialRequired:
 
 ReedwakeDelta_EventScript_AlreadyConverted:
 	msgbox ReedwakeDelta_Text_AlreadyConverted, MSGBOX_DEFAULT
+	goto ReedwakeDelta_EventScript_Close
+
+ReedwakeDelta_EventScript_GrassTrial:
+	msgbox ReedwakeDelta_Text_GrassTrial, MSGBOX_DEFAULT
+	goto ReedwakeDelta_EventScript_Close
+
+ReedwakeDelta_EventScript_FireTrial:
+	msgbox ReedwakeDelta_Text_FireTrial, MSGBOX_DEFAULT
+	goto ReedwakeDelta_EventScript_Close
+
+ReedwakeDelta_EventScript_WaterTrial:
+	msgbox ReedwakeDelta_Text_WaterTrial, MSGBOX_DEFAULT
 	goto ReedwakeDelta_EventScript_Close
 
 ReedwakeDelta_EventScript_Unsupported:
@@ -50,6 +65,21 @@ ReedwakeDelta_Text_TrialRequired:
 ReedwakeDelta_Text_AlreadyConverted:
 	.string "This POKéMON is already in its\n"
 	.string "DELTA form.$"
+
+ReedwakeDelta_Text_GrassTrial:
+	.string "We need a reading from this family.\p"
+	.string "On BRACKEN TRAIL, use a GRASS move\n"
+	.string "with it and win the wild battle.$"
+
+ReedwakeDelta_Text_FireTrial:
+	.string "We need a reading from this family.\p"
+	.string "At TIDE REACH, use a FIRE move\n"
+	.string "with it and win the wild battle.$"
+
+ReedwakeDelta_Text_WaterTrial:
+	.string "We need a reading from this family.\p"
+	.string "On REEDBANK PATH, use a WATER move\n"
+	.string "with it and win the wild battle.$"
 
 ReedwakeDelta_Text_Unsupported:
 	.string "The lab has no recipe for this\n"

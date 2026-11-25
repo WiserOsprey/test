@@ -198,10 +198,26 @@ header = """#ifndef GUARD_REEDWAKE_DELTA_H
 #define GUARD_REEDWAKE_DELTA_H
 
 u16 ReedwakeDelta_GetStandardSpecies(u16 species);
+void ReedwakeDelta_StartBattle(void);
+void ReedwakeDelta_RecordMove(u8 battler, u16 move);
+void ReedwakeDelta_FinishBattle(void);
 
 #endif
 """
 write_new("include/reedwake_delta.h", header)
+
+replace("include/constants/vars.h", "VAR_UNUSED_0x40F8                                0x40F8 // Unused Var",
+        "VAR_REEDWAKE_STARTER_TRIALS                      0x40F8")
+for path in ("src/battle_main.c", "src/battle_script_commands.c"):
+    replace(path, '#include "bulbasaur_field_notes.h"',
+            '#include "bulbasaur_field_notes.h"\n#include "reedwake_delta.h"')
+replace("src/battle_main.c", "    BulbasaurNotes_StartBattle();",
+        "    BulbasaurNotes_StartBattle();\n    ReedwakeDelta_StartBattle();")
+replace("src/battle_main.c", "    BulbasaurNotes_FinishBattle();",
+        "    BulbasaurNotes_FinishBattle();\n    ReedwakeDelta_FinishBattle();")
+replace("src/battle_script_commands.c", "        BulbasaurNotes_RecordMove(gBattlerAttacker, gCurrentMove);",
+        "        BulbasaurNotes_RecordMove(gBattlerAttacker, gCurrentMove);\n"
+        "        ReedwakeDelta_RecordMove(gBattlerAttacker, gCurrentMove);")
 
 for path in ("src/pokemon.c", "src/pokemon_icon.c", "src/pokemon_animation.c",
              "src/party_menu.c", "src/daycare.c"):
@@ -276,6 +292,95 @@ replace("include/bulbasaur_field_notes.h", "bool8 BulbasaurNotes_OfferDeltaEncou
 replace("include/bulbasaur_field_notes.h", "BULBASAUR_NOTES_DELTA_CAUGHT", "BULBASAUR_NOTES_DELTA_CONVERTED")
 replace("src/pokedex.c", 'static const u8 sDeltaUnlocked[] = _("Unlocked: Bulbasaur");',
         'static const u8 sDeltaUnlocked[] = _("Ready: Brackenhaven Lab");')
+
+
+def replace_dialogue(path, label, lines):
+    pattern = rf"(?m)^{label}:\n(?:\t\.string .+\n)+"
+    match = re.search(pattern, read(path))
+    if match is None:
+        raise SystemExit(f"Missing dialogue {label} in {path}")
+    text = label + ":\n" + "".join(f'\t.string "{line}"\n' for line in lines)
+    replace(path, match[0], text)
+
+
+for route, name in ((101, "BRACKEN TRAIL"), (102, "REEDBANK PATH"), (103, "TIDE REACH")):
+    route_marker = f'"id": "MAPSEC_ROUTE_{route}",\n      "name": '
+    replace("src/data/region_map/region_map_sections.json",
+            f'{route_marker}"ROUTE {route}"', f'{route_marker}"{name}"')
+
+path = "data/maps/Route101/scripts.inc"
+replace_dialogue(path, "Route101_Text_PleaseHelp",
+                 [r"The relay spooked that POKéMON!\p",
+                  r"Take a partner from my survey bag.\n",
+                  r"One of them can calm it down!$"])
+replace_dialogue(path, "Route101_Text_YouSavedMe",
+                 [r"PROF. BIRCH: Thank you, {PLAYER}.\p",
+                  r"I was measuring the relay when it\n",
+                  r"sent a pulse through the reeds.\p",
+                  r"That SILTSTILT felt it before I did.\n",
+                  r"We should talk at the lab.$"])
+replace_dialogue(path, "Route101_Text_RouteSign",
+                 [r"BRACKEN TRAIL / ROUTE 101\n", r"{UP_ARROW} OLDALE TOWN$"])
+replace_dialogue("data/maps/Route102/scripts.inc", "Route102_Text_RouteSignOldale",
+                 [r"REEDBANK PATH / ROUTE 102\n", r"{RIGHT_ARROW} OLDALE TOWN$"])
+replace_dialogue("data/maps/Route102/scripts.inc", "Route102_Text_RouteSignPetalburg",
+                 [r"REEDBANK PATH / ROUTE 102\n", r"{LEFT_ARROW} PETALBURG CITY$"])
+
+path = "data/maps/Route103/scripts.inc"
+for rival in ("May", "Brendan"):
+    prefix = f"Route103_Text_{rival}"
+    replace_dialogue(path, prefix + "Route103Pokemon",
+                     [r"IONA: The tide's coming in early.\n",
+                      r"Look at these marks on the stakes.$"])
+    replace_dialogue(path, prefix + "LetsBattle",
+                     [r"IONA: Hey, {PLAYER}. You got a partner!\p",
+                      r"Mine picked up a pulse from the water.\n",
+                      r"Let's battle and see how they react!$"])
+    replace_dialogue(path, prefix + "Defeated",
+                     [r"You read your partner faster than\n", r"I read mine. Good battle!$"])
+    replace_dialogue(path, prefix + "TimeToHeadBack",
+                     [r"IONA: Did you notice? The pulse stopped\n",
+                      r"the second the battle ended.\p",
+                      r"I'm writing it down. Let's bring our\n",
+                      r"readings to the BRACKENHAVEN lab.$"])
+replace_dialogue(path, "Route103_Text_RouteSign",
+                 [r"TIDE REACH / ROUTE 103\n", r"{DOWN_ARROW} OLDALE TOWN$"])
+
+path = "src/data/trainers.h"
+for rival in ("MAY", "BRENDAN"):
+    for starter in ("MUDKIP", "TREECKO", "TORCHIC"):
+        pattern = rf"(?ms)^\s*\[TRAINER_{rival}_ROUTE_103_{starter}\].*?^    \}},"
+        trainer = re.search(pattern, read(path))
+        if trainer is None:
+            raise SystemExit(f"Missing Tide Reach rival for {rival} and {starter}")
+        replace(path, trainer[0], trainer[0].replace(f'.trainerName = _("{rival}")',
+                                                   '.trainerName = _("IONA")'))
+
+path = "data/maps/LittlerootTown_ProfessorBirchsLab/scripts.inc"
+prefix = "LittlerootTown_ProfessorBirchsLab_Text_"
+replace_dialogue(path, prefix + "LikeYouToHavePokemon",
+                 [r"PROF. BIRCH: These relays used to keep\n",
+                  r"time with the tide.\p",
+                  r"Now the readings drift further apart\n",
+                  r"every day. I need another surveyor.\p",
+                  r"Your partner trusted you out there.\n",
+                  r"I'd like the two of you to keep at it.\p",
+                  r"{PLAYER} received the {STR_VAR_1}!$"])
+replace_dialogue(path, prefix + "MightBeGoodIdeaToGoSeeRival",
+                 [r"PROF. BIRCH: IONA took the north trail\n",
+                  r"to check the tide stakes.\p",
+                  r"Will you meet her at TIDE REACH?$"])
+replace_dialogue(path, prefix + "GetRivalToTeachYou",
+                 [r"PROF. BIRCH: Head north past OLDALE.\p",
+                  r"IONA will show you the highest tide\n",
+                  r"mark she found. I'll wait here.$"])
+replace_dialogue(path, prefix + "ExplainPokedex",
+                 [r"PROF. BIRCH: This POKéDEX can record\n",
+                  r"the signals your partners give off.\p",
+                  r"Battle on the survey trails to collect\n",
+                  r"readings under field conditions.\p",
+                  r"Bring them to my RESONANCE LAB table.\n",
+                  r"Start with the machine by the wall.$"])
 
 for path, contents in files.items():
     original = source / path
