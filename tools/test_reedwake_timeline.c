@@ -15,11 +15,16 @@ typedef int16_t s16;
 #define TRUE 1
 #define RGB(r, g, b) ((r) | ((g) << 5) | ((b) << 10))
 #define MAX_SPRITES 64
+#define ARRAY_COUNT(a) (sizeof(a) / sizeof((a)[0]))
+#define PIXEL_FILL(c) ((c) * 17)
+#define FONT_SMALL 0
+#define COPYWIN_FULL 0
+#define SE_SELECT 0
 #define FALSE 0
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #define JOY_NEW(mask) (keys & (mask))
 enum { DPAD_UP = 1, DPAD_DOWN = 2, DPAD_RIGHT = 4, DPAD_ANY = 7,
-       A_BUTTON = 8, B_BUTTON = 16, R_BUTTON = 32 };
+       A_BUTTON = 8, B_BUTTON = 16, R_BUTTON = 32, DPAD_LEFT = 64 };
 #include "constants/moves.h"
 #include "constants/battle_move_effects.h"
 enum { MOVE_TARGET_USER = 16, MOVE_TARGET_USER_OR_SELECTED = 2 };
@@ -50,6 +55,13 @@ static void LoadPalette(const void *src, u16 start, u16 size)
 {
     memcpy(&gPlttBufferUnfaded[start], src, size);
 }
+static void FillWindowPixelBuffer(u8 window, u8 fill) {}
+static void FillWindowPixelRect(u8 window, u8 fill, u8 x, u8 y, u8 width, u8 height) {}
+static void AddTextPrinterParameterized4(u8 window, u8 font, u8 x, u8 y, u8 letter,
+                                        u8 line, const u8 *colors, u8 speed, const u8 *text) {}
+static void PutWindowTilemap(u8 window) {}
+static void CopyWindowToVram(u8 window, u8 mode) {}
+static void PlaySE(u16 sound) {}
 static u16 roll = 1;
 static u16 Random(void) { return roll; }
 static bool8 FlagGet(u16 flag) { return flag < badges; }
@@ -90,6 +102,15 @@ static void Setup(u16 playerMove, u16 opponentMove)
     roll = 1;
 }
 
+static void FinishSlide(void)
+{
+    keys = 0;
+    assert(sTimeline.menuVisible);
+    while (sTimeline.menuFrame < ARRAY_COUNT(sReactionSlide) - 1)
+        assert(ReedwakeAdvance() && sTimeline.prompt);
+    assert(gBattle_BG0_Y == 0);
+}
+
 int main(void)
 {
     const u8 slots[] = {0, 0, 0, 0};
@@ -107,6 +128,7 @@ int main(void)
     assert(ReedwakeAdvance() && gBattlerByTurnOrder[0] == 0 && sTimeline.next[0] == 1);
     sTimeline.started = FALSE;
     assert(ReedwakeAdvance() && sTimeline.prompt && sTimeline.incoming == 1);
+    FinishSlide();
     keys = B_BUTTON;
     assert(ReedwakeAdvance() && sTimeline.next[1] == 1 && sTimeline.next[0] == 1);
     assert(sTimeline.count[1] == 3);
@@ -116,6 +138,7 @@ int main(void)
         assert(ReedwakeAdvance() && gBattlerByTurnOrder[0] == 0 && sTimeline.next[0] == i);
         sTimeline.started = FALSE;
         assert(ReedwakeAdvance() && sTimeline.prompt);
+        FinishSlide();
         keys = B_BUTTON;
         assert(ReedwakeAdvance() && sTimeline.next[1] == i && sTimeline.next[0] == i);
     }
@@ -185,6 +208,7 @@ int main(void)
     gBattleMons[0].speed = 60;
     gBattleMons[1].speed = 90;
     assert(ReedwakeAdvance() && sTimeline.prompt);
+    FinishSlide();
     keys = R_BUTTON;
     assert(ReedwakeAdvance() && sTimeline.next[0] == 0 && sTimeline.next[1] == 1);
     assert(ReedwakeTimelineDamage(100) == 125);
@@ -216,6 +240,7 @@ int main(void)
         sTimeline.started = FALSE;
     }
     assert(ReedwakeAdvance() && sTimeline.prompt && sTimeline.now == 100);
+    FinishSlide();
     keys = B_BUTTON;
     assert(ReedwakeAdvance() && sTimeline.next[1] == 1);
     assert(!ReedwakeAdvance());
@@ -272,6 +297,7 @@ int main(void)
     gBattleMons[0].status2 = STATUS2_RECHARGE;
     sTimeline.started = FALSE;
     assert(ReedwakeAdvance() && sTimeline.closingAction && sTimeline.prompt);
+    FinishSlide();
     keys = B_BUTTON;
     assert(ReedwakeAdvance() && sTimeline.next[0] == 3 && sTimeline.next[1] == 1);
     assert(!ReedwakeAdvance());
@@ -286,7 +312,7 @@ int main(void)
     gPlttBufferUnfaded[15] = 0x7FFF;
     assert(ReedwakeSetQueue(0, slots, aim, 2));
     ReedwakeStart();
-    assert(gPlttBufferUnfaded[15] == sReedwakeTeal);
+    assert(gPlttBufferUnfaded[15] == sReedwakeGrey);
     gSprites[1].inUse = TRUE;
     gSprites[1].x2 = 3;
     gSprites[1].y2 = -2;
@@ -302,6 +328,25 @@ int main(void)
     assert(strstr((const char *)lastMessage, "\nFoe Pound"));
     ReedwakeReset();
     assert(gPlttBufferUnfaded[15] == 0x7FFF);
+    Setup(MOVE_TACKLE, MOVE_POUND);
+    assert(ReedwakeSetQueue(0, slots, aim, 2));
+    ReedwakeStart();
+    assert(ReedwakeAdvance() && !sTimeline.prompt);
+    sTimeline.started = FALSE;
+    assert(ReedwakeAdvance() && sTimeline.prompt && gBattle_BG0_Y != 0);
+    FinishSlide();
+    keys = DPAD_DOWN;
+    assert(ReedwakeAdvance() && sTimeline.menuCursor == RW_DODGE);
+    keys = A_BUTTON;
+    assert(ReedwakeAdvance() && sTimeline.menuPage == 1);
+    keys = B_BUTTON;
+    assert(ReedwakeAdvance() && sTimeline.menuPage == 0);
+    keys = DPAD_RIGHT;
+    assert(ReedwakeAdvance() && sTimeline.menuCursor == RW_TAKE_HIT);
+    keys = A_BUTTON;
+    assert(ReedwakeAdvance() && sTimeline.started && !sTimeline.menuVisible);
+    assert(ReedwakeTimelineDamage(100) == 100 && gPlttBufferUnfaded[15] == sReedwakeGrey);
+    ReedwakeReset();
     puts("Reedwake timeline checks passed.");
     return 0;
 }

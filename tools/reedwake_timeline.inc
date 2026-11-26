@@ -1,6 +1,6 @@
 /* Optional single-battle timeline. Normal turns never call the scheduler. */
 enum { RW_FRONT, RW_UNDER, RW_AIR, RW_BEHIND };
-enum { RW_ATTACK, RW_DEFEND, RW_DODGE };
+enum { RW_ATTACK, RW_DEFEND, RW_DODGE, RW_TAKE_HIT };
 enum { RW_FAST_LIMIT = 25, RW_SPEED_UNAVAILABLE = 0xFF };
 
 struct ReedwakeTimeline
@@ -10,13 +10,16 @@ struct ReedwakeTimeline
     s16 reactionX, reactionY;
     u8 animationFrame, animationSprite, animationKind, animationBattler, animationPosition;
     u8 closingAction, staggered;
+    u8 menuFrame, menuCursor, menuPage;
+    bool8 menuVisible;
+    u16 menuBorder, menuPaper;
     u8 requested, active, started, prompt, incoming, percent, guardRecoil, dug[2], fly[2];
 };
 static EWRAM_DATA struct ReedwakeTimeline sTimeline = {0};
 static EWRAM_DATA u8 sReedwakeMessage[128] = {0};
 static EWRAM_DATA bool8 sReedwakeTinted = FALSE;
 static EWRAM_DATA u16 sReedwakeSavedBackground = 0;
-static const u16 sReedwakeTeal = RGB(20, 29, 26);
+static const u16 sReedwakeGrey = RGB(27, 27, 27);
 static const u8 sTimelineYour[] = _("Your ");
 static const u8 sTimelineFoe[] = _("Foe ");
 static const u8 sTimelineLine[] = _("\n");
@@ -24,7 +27,7 @@ static const u8 sTimelineClash[] = _(" clashed!");
 static const u8 sTimelineGuard[] = _(" guarded!");
 static const u8 sTimelineDodge[] = _(" dodged!");
 static const u8 *const sTimelineReactionText[] = {sTimelineClash, sTimelineGuard, sTimelineDodge};
-static const u8 sTimelinePrompt[] = _(" incoming!\nA: Clash  B: Guard  R/Arrows: Dodge");
+static const u8 sTimelinePrompt[] = _(" incoming!");
 static const u8 sTimelineWeak[] = _(" hits harder!");
 static const u8 sTimelineStopped[] = _(" was blocked!");
 static const u8 sTimelineDig[] = _("Burrowed underground!");
@@ -40,8 +43,75 @@ void ReedwakeSetTextboxTint(bool8 tinted)
         return;
     if (tinted)
         sReedwakeSavedBackground = gPlttBufferUnfaded[15];
-    LoadPalette(tinted ? &sReedwakeTeal : &sReedwakeSavedBackground, 15, sizeof(u16));
+    LoadPalette(tinted ? &sReedwakeGrey : &sReedwakeSavedBackground, 15, sizeof(u16));
     sReedwakeTinted = tinted;
+}
+
+static const u16 sReactionBorder = RGB(23, 10, 3);
+static const u16 sReactionPaper = RGB(31, 31, 31);
+static const u16 sReactionSelected = RGB(31, 29, 22);
+static const u8 sReactionColors[] = {0, 1, 0};
+static const u8 sReactionClash[] = _("CLASH");
+static const u8 sReactionGuard[] = _("GUARD");
+static const u8 sReactionDodge[] = _("DODGE");
+static const u8 sReactionTakeHit[] = _("TAKE HIT");
+static const u8 sReactionFront[] = _("FRONT");
+static const u8 sReactionAir[] = _("AIR");
+static const u8 sReactionUnder[] = _("UNDER");
+static const u8 sReactionBehind[] = _("BEHIND");
+static const u8 sReactionPosition[] = _("Dodge where?");
+static const u8 *const sReactionOptions[2][4] = {
+    {sReactionClash, sReactionGuard, sReactionDodge, sReactionTakeHit},
+    {sReactionFront, sReactionAir, sReactionUnder, sReactionBehind},
+};
+static const u8 sReactionPositions[] = {RW_FRONT, RW_AIR, RW_UNDER, RW_BEHIND};
+static const u8 sReactionSlide[] = {22, 16, 11, 7, 4, 2, 0};
+
+static void ReedwakeDrawReactionMenu(void)
+{
+    u8 i;
+    const u8 *title = sTimeline.menuPage ? sReactionPosition : sReedwakeMessage;
+    LoadPalette(&sReactionSelected, 15, sizeof(u16));
+    LoadPalette(&sReactionPaper, 14, sizeof(u16));
+    FillWindowPixelBuffer(B_WIN_MSG, PIXEL_FILL(13));
+    FillWindowPixelRect(B_WIN_MSG, PIXEL_FILL(14), 1, 1, 206, 9);
+    AddTextPrinterParameterized4(B_WIN_MSG, FONT_SMALL, 5, 0, 0, 0, sReactionColors, 0, title);
+    for (i = 0; i < 4; i++)
+    {
+        u8 x = 1 + (i & 1) * 104;
+        u8 y = 11 + (i / 2) * 10;
+        FillWindowPixelRect(B_WIN_MSG, PIXEL_FILL(i == sTimeline.menuCursor ? 15 : 14), x, y, 102, 9);
+        AddTextPrinterParameterized4(B_WIN_MSG, FONT_SMALL, x + 5, y - 1,
+                                    0, 0, sReactionColors, 0, sReactionOptions[sTimeline.menuPage][i]);
+    }
+    PutWindowTilemap(B_WIN_MSG);
+    CopyWindowToVram(B_WIN_MSG, COPYWIN_FULL);
+}
+
+static void ReedwakeOpenReactionMenu(u16 move)
+{
+    sTimeline.menuBorder = gPlttBufferUnfaded[13];
+    sTimeline.menuPaper = gPlttBufferUnfaded[14];
+    sTimeline.menuFrame = 0;
+    sTimeline.menuCursor = 0;
+    sTimeline.menuPage = 0;
+    sTimeline.menuVisible = TRUE;
+    LoadPalette(&sReactionBorder, 13, sizeof(u16));
+    StringCopy(StringCopy(StringCopy(sReedwakeMessage, sTimelineFoe), gMoveNames[move]), sTimelinePrompt);
+    gBattle_BG0_Y = 0 - sReactionSlide[0];
+    PlaySE(SE_SELECT);
+    ReedwakeDrawReactionMenu();
+}
+
+static void ReedwakeCloseReactionMenu(void)
+{
+    if (!sTimeline.menuVisible)
+        return;
+    LoadPalette(&sTimeline.menuBorder, 13, sizeof(u16));
+    LoadPalette(&sTimeline.menuPaper, 14, sizeof(u16));
+    LoadPalette(&sReedwakeGrey, 15, sizeof(u16));
+    gBattle_BG0_Y = 0;
+    sTimeline.menuVisible = FALSE;
 }
 
 static void ReedwakeStartReactionAnimation(u8 battler, u8 kind)
@@ -122,6 +192,7 @@ static void ReedwakePrintReaction(u8 incoming, u8 reaction, u16 move, const u8 *
 
 static void ReedwakeReset(void)
 {
+    ReedwakeCloseReactionMenu();
     ReedwakeSetTextboxTint(FALSE);
     memset(&sTimeline, 0, sizeof(sTimeline));
 }
@@ -525,15 +596,56 @@ static bool8 ReedwakeAdvance(void)
         return TRUE;
     if (sTimeline.prompt)
     {
-        if (JOY_NEW(DPAD_UP)) position = RW_AIR;
-        else if (JOY_NEW(DPAD_DOWN)) position = RW_UNDER;
-        else if (JOY_NEW(DPAD_RIGHT)) position = RW_BEHIND;
-        if (JOY_NEW(A_BUTTON)) reaction = RW_ATTACK;
-        else if (JOY_NEW(B_BUTTON)) reaction = RW_DEFEND;
-        else if (JOY_NEW(R_BUTTON | DPAD_ANY)) reaction = RW_DODGE;
-        else return TRUE;
+        u8 cursor = sTimeline.menuCursor;
+        if (sTimeline.menuFrame < ARRAY_COUNT(sReactionSlide) - 1)
+        {
+            gBattle_BG0_Y = 0 - sReactionSlide[++sTimeline.menuFrame];
+            return TRUE;
+        }
+        if (JOY_NEW(DPAD_LEFT | DPAD_RIGHT))
+            cursor ^= 1;
+        else if (JOY_NEW(DPAD_UP | DPAD_DOWN))
+            cursor ^= 2;
+        if (cursor != sTimeline.menuCursor)
+        {
+            sTimeline.menuCursor = cursor;
+            ReedwakeDrawReactionMenu();
+            return TRUE;
+        }
+        if (sTimeline.menuPage && JOY_NEW(B_BUTTON))
+        {
+            sTimeline.menuPage = 0;
+            sTimeline.menuCursor = RW_DODGE;
+            ReedwakeDrawReactionMenu();
+            return TRUE;
+        }
+        if (!sTimeline.menuPage && JOY_NEW(R_BUTTON))
+            reaction = RW_DODGE;
+        else if (!sTimeline.menuPage && JOY_NEW(B_BUTTON))
+            reaction = RW_DEFEND;
+        else if (!JOY_NEW(A_BUTTON))
+            return TRUE;
+        else if (sTimeline.menuPage)
+        {
+            reaction = RW_DODGE;
+            position = sReactionPositions[cursor];
+        }
+        else if (cursor == RW_DODGE)
+        {
+            sTimeline.menuPage = 1;
+            sTimeline.menuCursor = 0;
+            ReedwakeDrawReactionMenu();
+            return TRUE;
+        }
+        else
+            reaction = cursor;
+
         sTimeline.prompt = FALSE;
-        ReedwakeReact(sTimeline.incoming, reaction, position);
+        ReedwakeCloseReactionMenu();
+        if (reaction == RW_TAKE_HIT)
+            ReedwakeAction(sTimeline.incoming, 100);
+        else
+            ReedwakeReact(sTimeline.incoming, reaction, position);
         return TRUE;
     }
     ready0 = ReedwakeReady(0);
@@ -585,8 +697,7 @@ static bool8 ReedwakeAdvance(void)
     {
         sTimeline.incoming = actor;
         sTimeline.prompt = TRUE;
-        StringCopy(StringCopy(StringCopy(sReedwakeMessage, sTimelineFoe), gMoveNames[move]), sTimelinePrompt);
-        BattlePutTextOnWindow(sReedwakeMessage, B_WIN_MSG);
+        ReedwakeOpenReactionMenu(move);
     }
     else
         ReedwakeAction(actor, 100);
