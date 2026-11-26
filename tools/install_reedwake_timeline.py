@@ -17,6 +17,7 @@ s32 ReedwakeTimelineDamage(s32 damage);
 bool8 ReedwakeGuardRecoil(void);
 bool8 ReedwakeReleaseCharge(void);
 void ReedwakePositionHit(void);
+void ReedwakeSetFacing(u8 battler, bool8 reverse);
 """
 
 
@@ -44,13 +45,13 @@ focus = "static void CheckFocusPunch_ClearVarsBeforeTurnStarts(void)\n{"
 run = "static void RunTurnActionsFunctions(void)\n{\n"
 timeline = (TOOLS / "reedwake_timeline.inc").read_text(encoding="utf-8")
 edit("src/battle_main.c", [
-    (header, with_header),
+    (header, with_header + '#include "battle_gfx_sfx_util.h"\n'),
     ("static void CB2_InitBattleInternal(void);", "static void ReedwakeReset(void);\nstatic void CB2_InitBattleInternal(void);"),
     (start, start + "\n    ReedwakeReset();\n"),
     (focus, timeline + "\n" + focus),
     ("    gBattleMainFunc = RunTurnActionsFunctions;\n    gBattleCommunication[3] = 0;",
      "    ReedwakeStart();\n    gBattleMainFunc = RunTurnActionsFunctions;\n    gBattleCommunication[3] = 0;"),
-    (run, run + """    if (ReedwakeAnimateReaction())
+    (run, run + """    if (ReedwakeAnimateReaction() || ReedwakeUpdatePositions())
         return;
     if (sTimeline.active && sTimeline.started && gCurrentActionFuncId == B_ACTION_USE_MOVE
         && IsTextPrinterActive(B_WIN_MSG))
@@ -98,7 +99,8 @@ edit("src/battle_util.c", [
     (header, with_header),
     ("        gBattlescriptCurrInstr = gBattleScriptsForMoveEffects[gBattleMoves[gCurrentMove].effect];\n    }\n\n    if (gBattleTypeFlags & BATTLE_TYPE_ARENA)",
      "        if ((gCurrentMove == MOVE_DIG || gCurrentMove == MOVE_FLY) && ReedwakeReleaseCharge())\n"
-     "            gBattlescriptCurrInstr = gBattleScriptsForMoveEffects[EFFECT_HIT];\n"
+     "        {\n            gBattleScripting.animTurn = 1;\n"
+     "            gBattlescriptCurrInstr = gBattleScriptsForMoveEffects[EFFECT_HIT];\n        }\n"
      "        else\n            gBattlescriptCurrInstr = gBattleScriptsForMoveEffects[gBattleMoves[gCurrentMove].effect];\n"
      "    }\n\n    if (gBattleTypeFlags & BATTLE_TYPE_ARENA)"),
     ("void HandleAction_ActionFinished(void)\n{\n", "void HandleAction_ActionFinished(void)\n{\n    ReedwakePositionHit();\n"),
@@ -165,3 +167,24 @@ static const u8 sTextColors[][3] ='''),
         AddTextPrinterParameterized4(PSS_LABEL_WINDOW_MOVES_POWER_ACC, FONT_SMALL,
             GetStringRightAlignXOffset(FONT_SMALL, text, 71), 20, 0, 0, sTextColors[0], 0, text);'''),
 ])
+
+gfx = ROOT / "src/battle_gfx_sfx_util.c"
+text = replace(gfx.read_text(encoding="utf-8"), header, with_header)
+text += """
+void ReedwakeSetFacing(u8 battler, bool8 reverse)
+{
+    struct Pokemon *mon;
+    bool8 player = GetBattlerSide(battler) == B_SIDE_PLAYER;
+
+    if (gBattleSpritesDataPtr->battlerData[battler].behindSubstitute)
+        return;
+    mon = player ? &gPlayerParty[gBattlerPartyIndexes[battler]]
+                 : &gEnemyParty[gBattlerPartyIndexes[battler]];
+    if (player != reverse)
+        BattleLoadPlayerMonSpriteGfx(mon, battler);
+    else
+        BattleLoadOpponentMonSpriteGfx(mon, battler);
+    StartSpriteAnim(&gSprites[gBattlerSpriteIds[battler]], gBattleMonForms[battler]);
+}
+"""
+gfx.write_text(text, encoding="utf-8")

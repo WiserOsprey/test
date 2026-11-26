@@ -12,7 +12,10 @@ struct ReedwakeTimeline
     u8 closingAction, staggered;
     u8 menuFrame, menuCursor, menuPage;
     bool8 menuVisible;
-    u16 menuBorder, menuPaper;
+    u16 menuBorder, menuPaper, menuInk;
+    u8 shownPosition[2], rearMask, positionAnimBattler;
+    bool8 positionAnimRunning, changedPose[2];
+    s16 poseY[2];
     u8 requested, active, started, prompt, incoming, percent, guardRecoil, dug[2], fly[2];
 };
 static EWRAM_DATA struct ReedwakeTimeline sTimeline = {0};
@@ -48,6 +51,7 @@ void ReedwakeSetTextboxTint(bool8 tinted)
 }
 
 static const u16 sReactionBorder = RGB(23, 10, 3);
+static const u16 sReactionInk = RGB(0, 0, 0);
 static const u16 sReactionPaper = RGB(31, 31, 31);
 static const u16 sReactionSelected = RGB(31, 29, 22);
 static const u8 sReactionColors[] = {0, 1, 0};
@@ -74,13 +78,14 @@ static void ReedwakeDrawReactionMenu(void)
     LoadPalette(&sReactionSelected, 15, sizeof(u16));
     LoadPalette(&sReactionPaper, 14, sizeof(u16));
     FillWindowPixelBuffer(B_WIN_MSG, PIXEL_FILL(13));
-    FillWindowPixelRect(B_WIN_MSG, PIXEL_FILL(14), 1, 1, 206, 9);
+    FillWindowPixelRect(B_WIN_MSG, PIXEL_FILL(14), 2, 2, 204, 28);
     AddTextPrinterParameterized4(B_WIN_MSG, FONT_SMALL, 5, 0, 0, 0, sReactionColors, 0, title);
     for (i = 0; i < 4; i++)
     {
-        u8 x = 1 + (i & 1) * 104;
-        u8 y = 11 + (i / 2) * 10;
-        FillWindowPixelRect(B_WIN_MSG, PIXEL_FILL(i == sTimeline.menuCursor ? 15 : 14), x, y, 102, 9);
+        u8 x = 3 + (i & 1) * 102;
+        u8 y = 11 + (i / 2) * 9;
+        if (i == sTimeline.menuCursor)
+            FillWindowPixelRect(B_WIN_MSG, PIXEL_FILL(15), x, y, 100, 9);
         AddTextPrinterParameterized4(B_WIN_MSG, FONT_SMALL, x + 5, y - 1,
                                     0, 0, sReactionColors, 0, sReactionOptions[sTimeline.menuPage][i]);
     }
@@ -90,12 +95,14 @@ static void ReedwakeDrawReactionMenu(void)
 
 static void ReedwakeOpenReactionMenu(u16 move)
 {
+    sTimeline.menuInk = gPlttBufferUnfaded[1];
     sTimeline.menuBorder = gPlttBufferUnfaded[13];
     sTimeline.menuPaper = gPlttBufferUnfaded[14];
     sTimeline.menuFrame = 0;
     sTimeline.menuCursor = 0;
     sTimeline.menuPage = 0;
     sTimeline.menuVisible = TRUE;
+    LoadPalette(&sReactionInk, 1, sizeof(u16));
     LoadPalette(&sReactionBorder, 13, sizeof(u16));
     StringCopy(StringCopy(StringCopy(sReedwakeMessage, sTimelineFoe), gMoveNames[move]), sTimelinePrompt);
     gBattle_BG0_Y = 0 - sReactionSlide[0];
@@ -107,6 +114,7 @@ static void ReedwakeCloseReactionMenu(void)
 {
     if (!sTimeline.menuVisible)
         return;
+    LoadPalette(&sTimeline.menuInk, 1, sizeof(u16));
     LoadPalette(&sTimeline.menuBorder, 13, sizeof(u16));
     LoadPalette(&sTimeline.menuPaper, 14, sizeof(u16));
     LoadPalette(&sReedwakeGrey, 15, sizeof(u16));
@@ -190,9 +198,103 @@ static void ReedwakePrintReaction(u8 incoming, u8 reaction, u16 move, const u8 *
     BattlePutTextOnWindow(sReedwakeMessage, B_WIN_MSG);
 }
 
+static struct Sprite *ReedwakePositionSprite(u8 battler)
+{
+    u8 sprite = gBattlerSpriteIds[battler];
+    if (sprite >= MAX_SPRITES || !gSprites[sprite].inUse
+        || gBattlerPartyIndexes[battler] != sTimeline.party[battler] || !gBattleMons[battler].hp)
+        return NULL;
+    return &gSprites[sprite];
+}
+
+static void ReedwakeRestorePose(u8 battler)
+{
+    struct Sprite *sprite = ReedwakePositionSprite(battler);
+    if (sprite != NULL && sTimeline.changedPose[battler])
+        sprite->y2 = sTimeline.poseY[battler];
+    sTimeline.changedPose[battler] = FALSE;
+}
+
+static void ReedwakeRestorePositions(void)
+{
+    u8 battler;
+    if (!sTimeline.active)
+        return;
+    for (battler = 0; battler < 2; battler++)
+    {
+        ReedwakeRestorePose(battler);
+        if ((sTimeline.rearMask & (1 << battler)) && ReedwakePositionSprite(battler) != NULL)
+            ReedwakeSetFacing(battler, FALSE);
+    }
+}
+
+/* Let the regular battle controllers run the original takeoff/burrow setup. */
+static bool8 ReedwakeUpdatePositions(void)
+{
+    struct Sprite *sprite;
+    u8 battler, position;
+    bool8 reverse;
+    u16 move;
+
+    if (!sTimeline.active || (sTimeline.started && gCurrentActionFuncId != B_ACTION_USE_MOVE))
+        return FALSE;
+    if (gBattleControllerExecFlags)
+        return sTimeline.positionAnimRunning;
+    if (sTimeline.positionAnimRunning)
+    {
+        battler = sTimeline.positionAnimBattler;
+        sprite = ReedwakePositionSprite(battler);
+        if (sprite != NULL)
+        {
+            sprite->invisible = FALSE;
+            sprite->x2 = 0;
+            sprite->y2 = sTimeline.poseY[battler]
+                + (sTimeline.shownPosition[battler] == RW_AIR ? -22 : 18);
+            CopyAllBattleSpritesInvisibilities();
+        }
+        sTimeline.positionAnimRunning = FALSE;
+    }
+    for (battler = 0; battler < 2; battler++)
+    {
+        sprite = ReedwakePositionSprite(battler);
+        if (sprite == NULL)
+            continue;
+        reverse = sTimeline.position[battler ^ 1] == RW_BEHIND;
+        if (reverse != !!(sTimeline.rearMask & (1 << battler)))
+        {
+            ReedwakeSetFacing(battler, reverse);
+            sTimeline.rearMask ^= 1 << battler;
+        }
+        position = sTimeline.position[battler];
+        if (position == sTimeline.shownPosition[battler])
+        {
+            if (sTimeline.changedPose[battler])
+                sprite->y2 = sTimeline.poseY[battler] + (position == RW_AIR ? -22 : 18);
+            continue;
+        }
+        ReedwakeRestorePose(battler);
+        sTimeline.shownPosition[battler] = position;
+        if (position != RW_AIR && position != RW_UNDER)
+            continue;
+        sTimeline.poseY[battler] = sprite->y2;
+        sTimeline.changedPose[battler] = TRUE;
+        move = position == RW_UNDER ? MOVE_DIG : MOVE_FLY;
+        sTimeline.positionAnimBattler = battler;
+        sTimeline.positionAnimRunning = TRUE;
+        gActiveBattler = gBattlerAttacker = battler;
+        gBattlerTarget = battler ^ 1;
+        BtlController_EmitMoveAnimation(B_COMM_TO_CONTROLLER, move, 0, 0, 0,
+                                       gBattleMons[battler].friendship, &gDisableStructs[battler], 0);
+        MarkBattlerForControllerExec(battler);
+        return TRUE;
+    }
+    return FALSE;
+}
+
 static void ReedwakeReset(void)
 {
     ReedwakeCloseReactionMenu();
+    ReedwakeRestorePositions();
     ReedwakeSetTextboxTint(FALSE);
     memset(&sTimeline, 0, sizeof(sTimeline));
 }

@@ -37,17 +37,18 @@ static u8 keys, badges = 3, gBattlersCount = 2, gChosenActionByBattler[2];
 static u32 gBattleTypeFlags, gBattleControllerExecFlags;
 static u8 gBattlerPartyIndexes[2], gBattlerByTurnOrder[2], gActionsByTurnOrder[2];
 static u8 gCurrentTurnActionNumber, gCurrentActionFuncId, gBattlerAttacker, gBattlerTarget;
-static u8 gBattleOutcome, gMoveResultFlags, lastMessage[128];
+static u8 gActiveBattler, gBattleOutcome, gMoveResultFlags, lastMessage[128];
 static u16 gBattle_BG0_X, gBattle_BG0_Y, gCurrentMove, gChosenMoveByBattler[2];
 static const u8 gStatStageRatios[][2] = {{1, 1}};
 static const u8 gMoveNames[MOVES_COUNT][16] = {[MOVE_EARTHQUAKE] = "Earthquake", [MOVE_POUND] = "Pound", [MOVE_TACKLE] = "Tackle"};
 static struct { int8_t priority; u8 power, accuracy, target, effect; } gBattleMoves[MOVES_COUNT];
-static struct { u16 speed, attack, defense, hp, moves[4]; u8 pp[4], statStages[1], types[2], nickname[11];
+static struct { u16 speed, attack, defense, hp, moves[4]; u8 pp[4], statStages[1], types[2], nickname[11], friendship;
                 u32 status1, status2; } gBattleMons[2];
-static struct { u16 encoredMove; } gDisableStructs[2];
+struct DisableStruct { u16 encoredMove; };
+static struct DisableStruct gDisableStructs[2];
 static struct { u8 noValidMoves; } gProtectStructs[2];
 static struct { u8 chosenMovePositions[2], moveTarget[2]; } battleStruct, *gBattleStruct = &battleStruct;
-struct Sprite { bool8 inUse; s16 x2, y2; };
+struct Sprite { bool8 inUse, invisible; s16 x2, y2; };
 static struct Sprite gSprites[MAX_SPRITES];
 static u8 gBattlerSpriteIds[2] = {0,1};
 static u16 gPlttBufferUnfaded[16];
@@ -62,6 +63,18 @@ static void AddTextPrinterParameterized4(u8 window, u8 font, u8 x, u8 y, u8 lett
 static void PutWindowTilemap(u8 window) {}
 static void CopyWindowToVram(u8 window, u8 mode) {}
 static void PlaySE(u16 sound) {}
+#define B_COMM_TO_CONTROLLER 0
+static u16 emittedMove;
+static u8 emittedTurn, facing[2];
+static void BtlController_EmitMoveAnimation(u8 buffer, u16 move, u8 turn, u16 power,
+        s32 damage, u8 friendship, struct DisableStruct *disable, u8 hits)
+{
+    emittedMove = move;
+    emittedTurn = turn;
+}
+static void MarkBattlerForControllerExec(u8 battler) { gBattleControllerExecFlags = 1; }
+static void CopyAllBattleSpritesInvisibilities(void) {}
+static void ReedwakeSetFacing(u8 battler, bool8 reverse) { facing[battler] = reverse; }
 static u16 roll = 1;
 static u16 Random(void) { return roll; }
 static bool8 FlagGet(u16 flag) { return flag < badges; }
@@ -347,6 +360,24 @@ int main(void)
     assert(ReedwakeAdvance() && sTimeline.started && !sTimeline.menuVisible);
     assert(ReedwakeTimelineDamage(100) == 100 && gPlttBufferUnfaded[15] == sReedwakeGrey);
     ReedwakeReset();
+    Setup(MOVE_TACKLE, MOVE_POUND);
+    assert(ReedwakeSetQueue(0, slots, aim, 2));
+    ReedwakeStart();
+    gSprites[0].inUse = gSprites[1].inUse = TRUE;
+    gSprites[0].y2 = gSprites[1].y2 = 0;
+    sTimeline.position[0] = RW_BEHIND;
+    assert(!ReedwakeUpdatePositions() && facing[1] && !facing[0]);
+    sTimeline.position[0] = RW_AIR;
+    sTimeline.position[1] = RW_BEHIND;
+    assert(ReedwakeUpdatePositions() && facing[0] && emittedMove == MOVE_FLY && emittedTurn == 0);
+    gBattleControllerExecFlags = 0;
+    assert(!ReedwakeUpdatePositions() && !facing[1] && gSprites[0].y2 == -22);
+    sTimeline.position[0] = RW_UNDER;
+    assert(ReedwakeUpdatePositions() && emittedMove == MOVE_DIG && emittedTurn == 0);
+    gBattleControllerExecFlags = 0;
+    assert(!ReedwakeUpdatePositions() && gSprites[0].y2 == 18);
+    ReedwakeReset();
+    assert(!facing[0] && gSprites[0].y2 == 0);
     puts("Reedwake timeline checks passed.");
     return 0;
 }
